@@ -1,0 +1,396 @@
+SplineFontDB: 3.0
+FontName: drocerog
+FullName: drocerog
+FamilyName: drocerog
+Weight: Medium
+Copyright: Created by Christoph Hermes (hermes<AT>hausmilbe<DOT>net)\nFontForge 2.0 (http://fontforge.sf.net)
+UComments: "2012-1-3: Created." 
+Version: 001.000
+ItalicAngle: 0
+UnderlinePosition: -100
+UnderlineWidth: 50
+Ascent: 800
+Descent: 200
+LayerCount: 2
+Layer: 0 0 "Back"  1
+Layer: 1 0 "Zeichenebene"  0
+XUID: [1021 733 1673931694 14900029]
+FSType: 0
+OS2Version: 0
+OS2_WeightWidthSlopeOnly: 0
+OS2_UseTypoMetrics: 1
+CreationTime: 1325620299
+ModificationTime: 1325626809
+OS2TypoAscent: 0
+OS2TypoAOffset: 1
+OS2TypoDescent: 0
+OS2TypoDOffset: 1
+OS2TypoLinegap: 90
+OS2WinAscent: 0
+OS2WinAOffset: 1
+OS2WinDescent: 0
+OS2WinDOffset: 1
+HheadAscent: 0
+HheadAOffset: 1
+HheadDescent: 0
+HheadDOffset: 1
+MarkAttachClasses: 1
+DEI: 91125
+Encoding: UnicodeBmp
+UnicodeInterp: none
+NameList: Adobe Glyph List
+DisplaySize: -24
+AntiAlias: 1
+FitToEm: 1
+WinInfo: 54 27 12
+BeginPrivate: 0
+EndPrivate
+BeginChars: 65536 13
+
+StartChar: A
+Encoding: 65 65 0
+Width: 1000
+VWidth: 0
+Flags: HM
+LayerCount: 2
+Fore
+SplineSet
+1000 324 m 1
+ 1000 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 1000 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: B
+Encoding: 66 66 1
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+1000 324 m 1
+ 1000 276 l 1
+ 475.998 276 l 1
+ 475.998 292 475.998 308 475.998 324 c 1
+ 1000 324 l 1
+476 324 m 1
+ 524 323.977 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 324 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: C
+Encoding: 67 67 2
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+1000 324 m 1
+ 1000 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 1000 324 l 1
+476 317 m 5
+ 524 317 l 5
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 317 l 5
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: D
+Encoding: 68 68 3
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+524 324 m 1
+ 524 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 524 324 l 1
+476 324 m 1
+ 524 324 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 324 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: E
+Encoding: 69 69 4
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+1000 324 m 1
+ 1000 276 l 1
+ 476 276 l 1
+ 476 324 l 1
+ 1000 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: F
+Encoding: 70 70 5
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+524 324 m 1
+ 524 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 524 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: G
+Encoding: 71 71 6
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+1000 324 m 1
+ 1000 276 l 1
+ 476 276 l 1
+ 476 324 l 1
+ 1000 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 276 l 1
+ 476 276 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: H
+Encoding: 72 72 7
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+524 324 m 1
+ 524 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 524 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 276 l 1
+ 476 276 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: I
+Encoding: 73 73 8
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+1000 324 m 1
+ 1000 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 1000 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 276 l 1
+ 476 276 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: J
+Encoding: 74 74 9
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+384 300 m 0
+ 384 364.308 436.192 416.5 500.5 416.5 c 0
+ 564.808 416.5 617 364.308 617 300 c 0
+ 617 235.692 564.808 183.5 500.5 183.5 c 0
+ 436.192 183.5 384 235.692 384 300 c 0
+1000 324 m 1
+ 1000 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 1000 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+
+StartChar: K
+Encoding: 75 75 10
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+734 82 m 0
+ 644.226 -7.77441 513.703 -59.7031 534 -80 c 0
+ 554.297 -100.297 694.226 -63.7744 784 26 c 0
+ 873.774 115.774 902.297 251.703 882 272 c 0
+ 861.703 292.297 823.774 171.774 734 82 c 0
+36 300 m 0
+ 36 556.128 243.872 764 500 764 c 0
+ 756.128 764 964 556.128 964 300 c 0
+ 964 43.872 756.128 -164 500 -164 c 0
+ 243.872 -164 36 43.872 36 300 c 0
+1000 324 m 1
+ 1000 276 l 1
+ 908 276 l 1
+ 908 324 l 1
+ 1000 324 l 1
+476 -70 m 1
+ 524 -70 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 -70 l 1
+92 324 m 1
+ 92 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 92 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 670 l 1
+ 476 670 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 524325
+EndChar
+
+StartChar: L
+Encoding: 76 76 11
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+84 300 m 0
+ 84 70.368 270.368 -116 500 -116 c 0
+ 729.632 -116 916 70.368 916 300 c 0
+ 916 529.632 729.632 716 500 716 c 0
+ 270.368 716 84 529.632 84 300 c 0
+705 115 m 0
+ 794.774 204.774 832.703 325.297 853 305 c 0
+ 873.297 284.703 844.774 148.774 755 59 c 0
+ 665.226 -30.7744 525.297 -67.2969 505 -47 c 0
+ 484.703 -26.7031 615.226 25.2256 705 115 c 0
+36 300 m 0
+ 36 556.128 243.872 764 500 764 c 1
+ 761.404 767.309 967.103 558.074 964 300 c 1
+ 964 43.872 756.128 -164 500 -164 c 0
+ 243.872 -164 36 43.872 36 300 c 0
+1000 324 m 1
+ 1000 276 l 1
+ 939 276 l 1
+ 939 324 l 1
+ 1000 324 l 1
+476 -140 m 1
+ 524 -140 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 -140 l 1
+64 324 m 1
+ 64 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 64 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 735 l 1
+ 476 735 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 524325
+EndChar
+
+StartChar: M
+Encoding: 77 77 12
+Width: 1000
+VWidth: 0
+Flags: HW
+LayerCount: 2
+Fore
+SplineSet
+295 503 m 1
+ 295 95 l 1
+ 705 95 l 1
+ 705 503 l 1
+ 295 503 l 1
+235 563 m 1
+ 765 563 l 1
+ 765 35 l 1
+ 235 35 l 1
+ 235 563 l 1
+1000 324 m 1
+ 1000 276 l 1
+ 0 276 l 1
+ 0 324 l 1
+ 1000 324 l 1
+476 800 m 1
+ 524 800 l 1
+ 524 -200 l 1
+ 476 -200 l 1
+ 476 800 l 1
+EndSplineSet
+Validated: 5
+EndChar
+EndChars
+EndSplineFont
