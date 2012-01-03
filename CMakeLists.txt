@@ -112,8 +112,9 @@ SET (SRC_LIST
 	${CMAKE_SOURCE_DIR}/src/drocerog.c)	
 
 ADD_EXECUTABLE (drocerog 
-		${SRC_LIST}
-		${CMAKE_SOURCE_DIR}/cimages/images.c) 
+		${SRC_LIST}) 
+
+		# ${CMAKE_SOURCE_DIR}/cimages/images.c) 
 
 
 INCLUDE_DIRECTORIES(${TARGET_INCLUDE})
