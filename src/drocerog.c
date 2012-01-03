@@ -15,21 +15,21 @@ void mainscreen_repaint();
 void msg(char *s) 
 {
   FillArea(350, 770, 250, 20, WHITE);
-  SetFont(times20, BLACK);
+  SetFont(times12, BLACK);
   DrawString(350, 770, s);
   PartialUpdate(350, 770, 250, 20);
 }
 
 int main_handler(int type, int par1, int par2) 
 {
-    int i;
+    // int i;
 
     fprintf(stderr, "[%i %i %i]\n", type, par1, par2);
 
     if (type == EVT_INIT) {
         // occurs once at startup, only in main handler
 
-        times20 = OpenFont("times", 20, 1);
+        times12 = OpenFont("times", 20, 1);
     }
 
     if (type == EVT_SHOW) {
@@ -94,7 +94,7 @@ void mainscreen_repaint()
 
   ClearScreen();
 
-  SetFont(arialb12, BLACK);
+  SetFont(times12, BLACK);
   DrawString(5, 2, "droceRoG - Go Game Record Viewer");
 
   // DrawBitmap(0, 20, &background);
