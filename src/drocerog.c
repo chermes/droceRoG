@@ -5,7 +5,7 @@
 
 #include "inkview.h"
 
-ifont *times12;
+ifont *times12, *drocerogTTF;
 
 /* prototypes */
 int main_handler(int type, int par1, int par2);
@@ -22,14 +22,25 @@ void msg(char *s)
 
 int main_handler(int type, int par1, int par2) 
 {
-    // int i;
+    int i=0;
+    char **fonts;
 
     fprintf(stderr, "[%i %i %i]\n", type, par1, par2);
 
     if (type == EVT_INIT) {
         // occurs once at startup, only in main handler
 
-        times12 = OpenFont("times", 20, 1);
+        // times12 = OpenFont("times", 20, 1);
+        times12 = OpenFont("DejaVuSerif", 12, 1);
+        fonts = EnumFonts();
+        fprintf(stderr, "%d\n", i);
+        i = 0;
+        while (fonts[i] != NULL) {
+            fprintf(stderr, "font: %s\n", fonts[i]);
+            i += 1;
+        }
+
+        drocerogTTF = OpenFont("drocerog", (int) ScreenWidth()/9, 1);
     }
 
     if (type == EVT_SHOW) {
@@ -40,7 +51,7 @@ int main_handler(int type, int par1, int par2)
     if (type == EVT_KEYPRESS) {
         switch (par1) {
             case KEY_OK:
-                // OpenMenu(menu1, cindex, 20, 20, menu1_handler);
+                msg("KEY_OK");
                 break;
 
             case KEY_BACK:
@@ -68,6 +79,7 @@ int main_handler(int type, int par1, int par2)
                 break;
 
             case KEY_MENU:
+                // OpenMenu(menu1, cindex, 20, 20, menu1_handler);
                 msg("KEY_MENU");
                 break;
 
@@ -96,6 +108,17 @@ void mainscreen_repaint()
 
   SetFont(times12, BLACK);
   DrawString(5, 2, "droceRoG - Go Game Record Viewer");
+
+  SetFont(drocerogTTF, BLACK);
+  DrawString(5, 100+(int)ScreenWidth()/9*0, "BCCCCCCCD");
+  DrawString(5, 100+(int)ScreenWidth()/9*1, "EAAAAAAKF");
+  DrawString(5, 100+(int)ScreenWidth()/9*2, "EAJAAAJAF");
+  DrawString(5, 100+(int)ScreenWidth()/9*3, "EAAAAAKLF");
+  DrawString(5, 100+(int)ScreenWidth()/9*4, "EAAAJALKF");
+  DrawString(5, 100+(int)ScreenWidth()/9*5, "EAAAKLAAF");
+  DrawString(5, 100+(int)ScreenWidth()/9*6, "EAJKLMLAF");
+  DrawString(5, 100+(int)ScreenWidth()/9*7, "EAAAKLAAF");
+  DrawString(5, 100+(int)ScreenWidth()/9*8, "GIIIIIIIH");
 
   // DrawBitmap(0, 20, &background);
   // DrawBitmap(120, 30, &books);
