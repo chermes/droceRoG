@@ -67,7 +67,7 @@ static GoBoard *curBoard = NULL;
 /******************************************************************************/
 
 void board_new(int size, int offset_y)
-{
+{/*{{{*/
     int r, c, i, hoshi;
 
     if (curBoard != NULL)
@@ -134,10 +134,10 @@ void board_new(int size, int offset_y)
     curBoard->draw_font = OpenFont("drocerog", curBoard->draw_elemSize, 1);
     curBoard->draw_offset_y = offset_y;
 
-}
+}/*}}}*/
 
 void board_test_placeStones()
-{
+{/*{{{*/
     assert( curBoard != NULL );
     assert( curBoard->size > 6 );
 
@@ -162,10 +162,10 @@ void board_test_placeStones()
     curBoard->board[4 * curBoard->size + 5].field_type = FIELD_WHITE;
     curBoard->board[5 * curBoard->size + 5].marker_type = MARKER_CIRC;
     curBoard->board[5 * curBoard->size + 5].field_type = FIELD_WHITE;
-}
+}/*}}}*/
 
 void board_cleanup()
-{
+{/*{{{*/
     if (curBoard != NULL) {
         free(curBoard->board);
         curBoard->board = NULL;
@@ -175,10 +175,10 @@ void board_cleanup()
         free(curBoard);
         curBoard = NULL;
     }
-}
+}/*}}}*/
 
 void board_print()
-{
+{/*{{{*/
     int r, c;
 
     assert( curBoard != NULL );
@@ -189,10 +189,10 @@ void board_print()
         }
         fprintf(stderr, "\n");
     }
-}
+}/*}}}*/
 
 void board_draw_update(int bPartialUpdate)
-{
+{/*{{{*/
     int r, c, i, x, y;
 
     assert( curBoard != NULL );
@@ -246,5 +246,5 @@ void board_draw_update(int bPartialUpdate)
     if (bPartialUpdate)
         PartialUpdate(0, curBoard->draw_offset_y, curBoard->draw_elemSize * curBoard->size, curBoard->draw_elemSize * curBoard->size);
     */
-}
+}/*}}}*/
 
