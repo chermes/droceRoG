@@ -4,7 +4,7 @@
  */
 
 #include "inkview.h"
-#include "goboard.h"
+// #include "goboard.h"
 #include "gogame.h"
 
 ifont *times12;
@@ -12,7 +12,7 @@ ifont *times12;
 /* prototypes */
 int main_handler(int type, int par1, int par2);
 void msg(char *s);
-void mainscreen_repaint();
+// void mainscreen_repaint();
 
 void msg(char *s) 
 {
@@ -24,8 +24,8 @@ void msg(char *s)
 
 int main_handler(int type, int par1, int par2) 
 {
-    int i=0;
-    char **fonts;
+    // int i=0;
+    // char **fonts;
 
     fprintf(stderr, "[%i %i %i]\n", type, par1, par2);
 
@@ -33,28 +33,28 @@ int main_handler(int type, int par1, int par2)
         // occurs once at startup, only in main handler
 
         times12 = OpenFont("DejaVuSerif", 12, 1);
-        fonts = EnumFonts();
-        fprintf(stderr, "%d\n", i);
-        i = 0;
-        while (fonts[i] != NULL) {
-            fprintf(stderr, "font: %s\n", fonts[i]);
-            i += 1;
-        }
+        // fonts = EnumFonts();
+        // fprintf(stderr, "%d\n", i);
+        // i = 0;
+        // while (fonts[i] != NULL) {
+            // fprintf(stderr, "font: %s\n", fonts[i]);
+            // i += 1;
+        // }
 
-        // drocerogTTF = OpenFont("DejaVuSansMono", (int) ScreenWidth()/9, 1);
-        // drocerogTTF = OpenFont("drocerog", (int) ScreenWidth()/9, 1);
-
-        board_new(9, 50);
+        // board_new(9, 50);
         // board_print();
         // board_test_placeStones();
 
         gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
+        // gogame_new_from_file("testSGF.sgf");
         gogame_printGameInfo();
     }
 
     if (type == EVT_SHOW) {
         // occurs when this event handler becomes active
-        mainscreen_repaint();
+        // mainscreen_repaint();
+        gogame_draw_fullrepaint();
+
     }
 
     if (type == EVT_KEYPRESS) {
@@ -101,25 +101,25 @@ int main_handler(int type, int par1, int par2)
     if (type == EVT_EXIT) {
         // occurs only in main handler when exiting or when SIGINT received.
         // save configuration here, if needed
-        board_cleanup();
+        // board_cleanup();
     }
 
     return 0;
 }
 
-void mainscreen_repaint() 
-{
+// void mainscreen_repaint() 
+// {
 
   // char buf[64];
   // ibitmap *b;
   // int i;
 
-  ClearScreen();
+  // ClearScreen();
 
-  SetFont(times12, BLACK);
-  DrawString(5, 2, "droceRoG - Go Game Record Viewer");
+  // SetFont(times12, BLACK);
+  // DrawString(5, 2, "droceRoG - Go Game Record Viewer");
 
-  board_draw_update(0);
+  // board_draw_update(0);
 
   // DrawBitmap(0, 20, &background);
   // DrawBitmap(120, 30, &books);
@@ -178,9 +178,9 @@ void mainscreen_repaint()
 
   //DrawTextRect(25, 400, 510, 350, sometext, ALIGN_LEFT);
 
-  FullUpdate();
+  // FullUpdate();
 
-}
+// }
 
 int main()
 {

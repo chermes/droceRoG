@@ -17,6 +17,8 @@ void gogame_cleanup();
 
 void gogame_printGameInfo();
 
+void gogame_draw_fullrepaint();
+
 #ifdef __cplusplus
 }
 #endif
