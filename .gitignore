@@ -6,3 +6,4 @@ cimages
 cmake_install.cmake
 drocerog
 *.g2n
+*~
