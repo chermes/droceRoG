@@ -5,6 +5,7 @@
 
 #include "inkview.h"
 #include "goboard.h"
+#include "gogame.h"
 
 ifont *times12;
 
@@ -44,8 +45,11 @@ int main_handler(int type, int par1, int par2)
         // drocerogTTF = OpenFont("drocerog", (int) ScreenWidth()/9, 1);
 
         board_new(9, 50);
-        board_print();
-        board_test_placeStones();
+        // board_print();
+        // board_test_placeStones();
+
+        gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
+        gogame_printGameInfo();
     }
 
     if (type == EVT_SHOW) {
@@ -178,7 +182,7 @@ void mainscreen_repaint()
 
 }
 
-int main(int argc, char **argv)
+int main()
 {
     InkViewMain(main_handler);
     return 0;

@@ -7,3 +7,5 @@ cmake_install.cmake
 drocerog
 *.g2n
 *~
+*.a
+*.sgf

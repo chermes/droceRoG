@@ -3,7 +3,7 @@
  * Author: Christoph Hermes (hermes@hausmilbe.net)
  */
 
-#include <goboard.h>
+#include "goboard.h"
 
 #include <stdlib.h>
 #include <stdio.h>
