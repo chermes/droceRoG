@@ -26,17 +26,26 @@ const char gridTypeString[10][2] = { "B", "C", "D",
 typedef enum { /* WARNING: when changing the element number, consider the bit
                 * field length in GoBoardElement */
     FIELD_EMPTY,              /* empty field */
-    FIELD_BLACK, FIELD_WHITE, /* black and white stone */
-    FIELD_KO                  /* ko marker  */
+    FIELD_BLACK, FIELD_WHITE  /* black and white stone */
 } FieldType;
-const char fieldTypeString[4][2] = { " ", /* empty field not used */
-                                     "K", "L", 
-                                     "M" };
+const char fieldTypeString[3][2] = { " ", /* empty field not used */
+                                     "K", "L" };
+
+typedef enum { /* WARNING: when changing the element number, consider the bit
+                * field length in GoBoardElement */
+    MARKER_EMPTY,                                   /* no marker */
+    MARKER_KO,                                      /* ko marker */
+    MARKER_SQUARE, MARKER_TRIANGLE, MARKER_CIRC     /* shape marker */
+} MarkerType;
+const char markerTypeString[5][2] = { " ", /* empty marker, not used */
+                                      "M",
+                                      "M", "N", "O" };
 
 typedef struct
 {
     unsigned grid_type:4;   /* GridType */
     unsigned field_type:2;  /* FieldType */
+    unsigned marker_type:3; /* MarkerType */
     unsigned draw_update:1; /* Update this field? */
 } GoBoardElement;
 
@@ -76,7 +85,8 @@ void board_new(int size, int offset_y)
 
             /* empty field */
             curBoard->board[i].field_type = FIELD_EMPTY;
-
+            /* empty marker */
+            curBoard->board[i].marker_type = MARKER_EMPTY;
             /* update field when drawing */
             curBoard->board[i].draw_update = TRUE;
 
@@ -120,10 +130,25 @@ void board_new(int size, int offset_y)
     }
 
     /* set font size and load ttf */
-    curBoard->draw_elemSize = (int) (ScreenWidth() / curBoard->size);
+    curBoard->draw_elemSize = (int) (ScreenWidth() / size);
     curBoard->draw_font = OpenFont("drocerog", curBoard->draw_elemSize, 1);
     curBoard->draw_offset_y = offset_y;
 
+    /* place some test stones and markers */
+    curBoard->board[2 * size + 2].field_type = FIELD_BLACK;
+    curBoard->board[3 * size + 2].field_type = FIELD_WHITE;
+
+    curBoard->board[2 * size + 3].marker_type = MARKER_KO;
+    curBoard->board[3 * size + 3].marker_type = MARKER_SQUARE;
+    curBoard->board[4 * size + 3].marker_type = MARKER_TRIANGLE;
+    curBoard->board[5 * size + 3].marker_type = MARKER_CIRC;
+
+    curBoard->board[3 * size + 4].marker_type = MARKER_SQUARE;
+    curBoard->board[3 * size + 4].field_type = FIELD_BLACK;
+    curBoard->board[4 * size + 4].marker_type = MARKER_TRIANGLE;
+    curBoard->board[4 * size + 4].field_type = FIELD_BLACK;
+    curBoard->board[5 * size + 4].marker_type = MARKER_CIRC;
+    curBoard->board[5 * size + 4].field_type = FIELD_BLACK;
 }
 
 void board_cleanup()
@@ -181,10 +206,20 @@ void board_draw_update(int bPartialUpdate)
                     case FIELD_WHITE:
                         DrawString(x, y, fieldTypeString[curBoard->board[i].field_type]);
                         break;
+                }
 
-                    case FIELD_KO:
-                        DrawString(x, y, gridTypeString[curBoard->board[i].grid_type]);
-                        DrawString(x, y, fieldTypeString[curBoard->board[i].field_type]);
+                switch (curBoard->board[i].marker_type) {
+                    case MARKER_KO:
+                        DrawString(x, y, markerTypeString[curBoard->board[i].marker_type]);
+                        break;
+
+                    case MARKER_SQUARE:
+                    case MARKER_TRIANGLE:
+                    case MARKER_CIRC:
+                        if (curBoard->board[i].field_type == FIELD_BLACK)
+                            SetFont(curBoard->draw_font, WHITE);
+                        DrawString(x, y, markerTypeString[curBoard->board[i].marker_type]);
+                        SetFont(curBoard->draw_font, BLACK);
                         break;
                 }
 
