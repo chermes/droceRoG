@@ -14,13 +14,14 @@ Descent: 200
 LayerCount: 2
 Layer: 0 0 "Back"  1
 Layer: 1 0 "Zeichenebene"  0
+NeedsXUIDChange: 1
 XUID: [1021 733 1673931694 14900029]
 FSType: 0
 OS2Version: 0
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 1
 CreationTime: 1325620299
-ModificationTime: 1325626809
+ModificationTime: 1325673554
 OS2TypoAscent: 0
 OS2TypoAOffset: 1
 OS2TypoDescent: 0
@@ -34,6 +35,7 @@ HheadAscent: 0
 HheadAOffset: 1
 HheadDescent: 0
 HheadDOffset: 1
+OS2Vendor: 'PfEd'
 MarkAttachClasses: 1
 DEI: 91125
 Encoding: UnicodeBmp
@@ -311,7 +313,7 @@ SplineSet
  476 670 l 1
  476 800 l 1
 EndSplineSet
-Validated: 524325
+Validated: 37
 EndChar
 
 StartChar: L
@@ -358,14 +360,14 @@ SplineSet
  476 735 l 1
  476 800 l 1
 EndSplineSet
-Validated: 524325
+Validated: 37
 EndChar
 
 StartChar: M
 Encoding: 77 77 12
 Width: 1000
 VWidth: 0
-Flags: HW
+Flags: HWO
 LayerCount: 2
 Fore
 SplineSet
@@ -379,18 +381,7 @@ SplineSet
  765 35 l 1
  235 35 l 1
  235 563 l 1
-1000 324 m 1
- 1000 276 l 1
- 0 276 l 1
- 0 324 l 1
- 1000 324 l 1
-476 800 m 1
- 524 800 l 1
- 524 -200 l 1
- 476 -200 l 1
- 476 800 l 1
 EndSplineSet
-Validated: 5
 EndChar
 EndChars
 EndSplineFont
