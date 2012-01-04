@@ -55,6 +55,7 @@ typedef struct
     GoBoardElement *board;  /* board[col * size + row] */
     int draw_elemSize;      /* size in points for each field element */
     ifont *draw_font;       /* ttf handler for the drocerog ttf */
+    int draw_offset_x;      /* move the board the specified points right */
     int draw_offset_y;      /* move the board the specified points down */
 } GoBoard;
 
@@ -132,6 +133,7 @@ void board_new(int size, int offset_y)
     /* set font size and load ttf */
     curBoard->draw_elemSize = (int) (ScreenWidth() / size);
     curBoard->draw_font = OpenFont("drocerog", curBoard->draw_elemSize, 1);
+    curBoard->draw_offset_x = (int) ((ScreenWidth() - curBoard->draw_elemSize * size) / 2);
     curBoard->draw_offset_y = offset_y;
 
 }/*}}}*/
@@ -202,7 +204,7 @@ void board_draw_update(int bPartialUpdate)
     for (r=0; r<curBoard->size; r++) {
         for (c=0; c<curBoard->size; c++) {
             i = c * curBoard->size + r;
-            x = c * curBoard->draw_elemSize;
+            x = curBoard->draw_offset_x + c * curBoard->draw_elemSize;
             y = curBoard->draw_offset_y + curBoard->draw_elemSize * r;
 
             /* check if update necessary */
