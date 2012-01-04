@@ -4,6 +4,7 @@
  */
 
 #include "inkview.h"
+#include "goboard.h"
 
 ifont *times12, *drocerogTTF;
 
@@ -30,7 +31,6 @@ int main_handler(int type, int par1, int par2)
     if (type == EVT_INIT) {
         // occurs once at startup, only in main handler
 
-        // times12 = OpenFont("times", 20, 1);
         times12 = OpenFont("DejaVuSerif", 12, 1);
         fonts = EnumFonts();
         fprintf(stderr, "%d\n", i);
@@ -40,7 +40,11 @@ int main_handler(int type, int par1, int par2)
             i += 1;
         }
 
+        // drocerogTTF = OpenFont("DejaVuSansMono", (int) ScreenWidth()/9, 1);
         drocerogTTF = OpenFont("drocerog", (int) ScreenWidth()/9, 1);
+
+        board_new(9);
+        board_print();
     }
 
     if (type == EVT_SHOW) {
@@ -92,6 +96,7 @@ int main_handler(int type, int par1, int par2)
     if (type == EVT_EXIT) {
         // occurs only in main handler when exiting or when SIGINT received.
         // save configuration here, if needed
+        board_cleanup();
     }
 
     return 0;
