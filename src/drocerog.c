@@ -45,6 +45,7 @@ int main_handler(int type, int par1, int par2)
 
         board_new(9, 50);
         board_print();
+        board_test_placeStones();
     }
 
     if (type == EVT_SHOW) {

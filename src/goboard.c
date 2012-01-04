@@ -134,21 +134,34 @@ void board_new(int size, int offset_y)
     curBoard->draw_font = OpenFont("drocerog", curBoard->draw_elemSize, 1);
     curBoard->draw_offset_y = offset_y;
 
-    /* place some test stones and markers */
-    curBoard->board[2 * size + 2].field_type = FIELD_BLACK;
-    curBoard->board[3 * size + 2].field_type = FIELD_WHITE;
+}
 
-    curBoard->board[2 * size + 3].marker_type = MARKER_KO;
-    curBoard->board[3 * size + 3].marker_type = MARKER_SQUARE;
-    curBoard->board[4 * size + 3].marker_type = MARKER_TRIANGLE;
-    curBoard->board[5 * size + 3].marker_type = MARKER_CIRC;
+void board_test_placeStones()
+{
+    assert( curBoard != NULL );
+    assert( curBoard->size > 6 );
 
-    curBoard->board[3 * size + 4].marker_type = MARKER_SQUARE;
-    curBoard->board[3 * size + 4].field_type = FIELD_BLACK;
-    curBoard->board[4 * size + 4].marker_type = MARKER_TRIANGLE;
-    curBoard->board[4 * size + 4].field_type = FIELD_BLACK;
-    curBoard->board[5 * size + 4].marker_type = MARKER_CIRC;
-    curBoard->board[5 * size + 4].field_type = FIELD_BLACK;
+    curBoard->board[2 * curBoard->size + 2].field_type = FIELD_BLACK;
+    curBoard->board[3 * curBoard->size + 2].field_type = FIELD_WHITE;
+
+    curBoard->board[2 * curBoard->size + 3].marker_type = MARKER_KO;
+    curBoard->board[3 * curBoard->size + 3].marker_type = MARKER_SQUARE;
+    curBoard->board[4 * curBoard->size + 3].marker_type = MARKER_TRIANGLE;
+    curBoard->board[5 * curBoard->size + 3].marker_type = MARKER_CIRC;
+
+    curBoard->board[3 * curBoard->size + 4].marker_type = MARKER_SQUARE;
+    curBoard->board[3 * curBoard->size + 4].field_type = FIELD_BLACK;
+    curBoard->board[4 * curBoard->size + 4].marker_type = MARKER_TRIANGLE;
+    curBoard->board[4 * curBoard->size + 4].field_type = FIELD_BLACK;
+    curBoard->board[5 * curBoard->size + 4].marker_type = MARKER_CIRC;
+    curBoard->board[5 * curBoard->size + 4].field_type = FIELD_BLACK;
+
+    curBoard->board[3 * curBoard->size + 5].marker_type = MARKER_SQUARE;
+    curBoard->board[3 * curBoard->size + 5].field_type = FIELD_WHITE;
+    curBoard->board[4 * curBoard->size + 5].marker_type = MARKER_TRIANGLE;
+    curBoard->board[4 * curBoard->size + 5].field_type = FIELD_WHITE;
+    curBoard->board[5 * curBoard->size + 5].marker_type = MARKER_CIRC;
+    curBoard->board[5 * curBoard->size + 5].field_type = FIELD_WHITE;
 }
 
 void board_cleanup()

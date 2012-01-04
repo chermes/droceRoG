@@ -26,6 +26,11 @@ void board_print();
  * */
 void board_draw_update(int bPartialUpdate);
 
+/******************************************************************************/
+
+/* place some test stones and markers */
+void board_test_placeStones();
+
 #ifdef __cplusplus
 }
 #endif
