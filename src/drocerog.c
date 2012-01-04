@@ -6,7 +6,7 @@
 #include "inkview.h"
 #include "goboard.h"
 
-ifont *times12, *drocerogTTF;
+ifont *times12;
 
 /* prototypes */
 int main_handler(int type, int par1, int par2);
@@ -41,9 +41,9 @@ int main_handler(int type, int par1, int par2)
         }
 
         // drocerogTTF = OpenFont("DejaVuSansMono", (int) ScreenWidth()/9, 1);
-        drocerogTTF = OpenFont("drocerog", (int) ScreenWidth()/9, 1);
+        // drocerogTTF = OpenFont("drocerog", (int) ScreenWidth()/9, 1);
 
-        board_new(9);
+        board_new(9, 50);
         board_print();
     }
 
@@ -114,16 +114,7 @@ void mainscreen_repaint()
   SetFont(times12, BLACK);
   DrawString(5, 2, "droceRoG - Go Game Record Viewer");
 
-  SetFont(drocerogTTF, BLACK);
-  DrawString(5, 100+(int)ScreenWidth()/9*0, "BCCCCCCCD");
-  DrawString(5, 100+(int)ScreenWidth()/9*1, "EAAAAAAKF");
-  DrawString(5, 100+(int)ScreenWidth()/9*2, "EAJAAAJAF");
-  DrawString(5, 100+(int)ScreenWidth()/9*3, "EAAAAAKLF");
-  DrawString(5, 100+(int)ScreenWidth()/9*4, "EAAAJALKF");
-  DrawString(5, 100+(int)ScreenWidth()/9*5, "EAAAKLAAF");
-  DrawString(5, 100+(int)ScreenWidth()/9*6, "EAJKLMLAF");
-  DrawString(5, 100+(int)ScreenWidth()/9*7, "EAAAKLAAF");
-  DrawString(5, 100+(int)ScreenWidth()/9*8, "GIIIIIIIH");
+  board_draw_update(0);
 
   // DrawBitmap(0, 20, &background);
   // DrawBitmap(120, 30, &books);
