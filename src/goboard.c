@@ -67,8 +67,7 @@ static GoBoard *curBoard = NULL;
 
 /******************************************************************************/
 
-/* TODO: rename function */
-void determineGroups(int cur_r, int cur_c);
+void clearDeadGroups(int cur_r, int cur_c);
 
 /******************************************************************************/
 
@@ -171,7 +170,7 @@ void board_test_placeStones()
     curBoard->board[5 * curBoard->size + 5].field_type = FIELD_WHITE;
 }/*}}}*/
 
-void board_placeStone(int r, int c, BoardPlayer player, int bLibertyCheck)
+void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
 {/*{{{*/
     assert( curBoard != NULL );
     assert( r >= 0 );
@@ -190,12 +189,12 @@ void board_placeStone(int r, int c, BoardPlayer player, int bLibertyCheck)
     }
 
     /* remove stones if necessary */
-    if (bLibertyCheck) {
-        determineGroups(r, c);
+    if (bIsMove) {
+        clearDeadGroups(r, c);
     }
 }/*}}}*/
 
-void determineGroups(int cur_r, int cur_c)
+void clearDeadGroups(int cur_r, int cur_c)
 {/*{{{*/
     short *groups = NULL;
     short *idxs = NULL;

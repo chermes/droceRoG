@@ -25,11 +25,13 @@ void board_print();
 /* draw board on screen 
  * bPartialUpdate: update screen at parts which have been changed. If set to 0,
  *      the FullUpdate() call is left to user.
- * */
+ */
 void board_draw_update(int bPartialUpdate);
 
-void board_placeStone(int r, int c, BoardPlayer player, int bLibertyCheck);
-// void board_placeStone(int x, int y, BoardPlayer, *removedList);
+/* If bIsMove=1, then this function performs a liberty check and a creates a
+ * new history entry. Otherwise, it just updates the current history.
+ */
+void board_placeStone(int r, int c, BoardPlayer player, int bIsMove);
 
 /******************************************************************************/
 
