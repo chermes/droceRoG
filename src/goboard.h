@@ -28,7 +28,7 @@ void board_print();
  * */
 void board_draw_update(int bPartialUpdate);
 
-void board_placeStone(int r, int c, BoardPlayer player);
+void board_placeStone(int r, int c, BoardPlayer player, int bLibertyCheck);
 // void board_placeStone(int x, int y, BoardPlayer, *removedList);
 
 /******************************************************************************/

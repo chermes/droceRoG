@@ -47,6 +47,7 @@ int main_handler(int type, int par1, int par2)
 
         gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
         // gogame_new_from_file("testSGF.sgf");
+        // gogame_new_from_file("testSGF_problem.sgf");
         gogame_printGameInfo();
     }
 

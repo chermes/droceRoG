@@ -128,6 +128,7 @@ void test_readSGF()
 {/*{{{*/
     SGFNode *cur = NULL;
     SGFProperty *prop = NULL;
+    int r, c;
 
     /* test: list all properties in the main path, ignoring children */
     for (cur = gameTree->root; cur; cur = cur->child) {
@@ -139,21 +140,23 @@ void test_readSGF()
         fprintf(stderr, "\n");
 
         for (prop = cur->props; prop; prop = prop->next) {
+            r = prop->value[1] - 'a';
+            c = prop->value[0] - 'a';
             switch (prop->name) {
                 case ENC_SGFPROP('A', 'W'):
-                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE);
+                    board_placeStone(r, c, BOARD_WHITE, 0);
                     break;
 
                 case ENC_SGFPROP('A', 'B'):
-                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK);
+                    board_placeStone(r, c, BOARD_BLACK, 0);
                     break;
 
                 case ENC_SGFPROP('B', ' '):
-                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK);
+                    board_placeStone(r, c, BOARD_BLACK, 1);
                     break;
 
                 case ENC_SGFPROP('W', ' '):
-                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE);
+                    board_placeStone(r, c, BOARD_WHITE, 1);
                     break;
             }
         }
@@ -171,7 +174,7 @@ void gogame_draw_fullrepaint()
     /* draw title */
     SetFont(drawProperties.font_ttf, BLACK);
     snprintf( msg, sizeof(msg),
-        "Black: %s [%s], White: %s [%s], Date: %s, Result = %s",
+        "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
         gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank, 
         gameInfo.date, gameInfo.result);
     DrawString(2, drawProperties.fontSpace, msg);

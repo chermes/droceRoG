@@ -67,6 +67,11 @@ static GoBoard *curBoard = NULL;
 
 /******************************************************************************/
 
+/* TODO: rename function */
+void determineGroups(int cur_r, int cur_c);
+
+/******************************************************************************/
+
 void board_new(int size, int offset_y)
 {/*{{{*/
     int r, c, i, hoshi;
@@ -166,7 +171,7 @@ void board_test_placeStones()
     curBoard->board[5 * curBoard->size + 5].field_type = FIELD_WHITE;
 }/*}}}*/
 
-void board_placeStone(int r, int c, BoardPlayer player)
+void board_placeStone(int r, int c, BoardPlayer player, int bLibertyCheck)
 {/*{{{*/
     assert( curBoard != NULL );
     assert( r >= 0 );
@@ -183,6 +188,208 @@ void board_placeStone(int r, int c, BoardPlayer player)
             curBoard->board[c * curBoard->size + r].field_type = FIELD_WHITE;
             break;
     }
+
+    /* remove stones if necessary */
+    if (bLibertyCheck) {
+        determineGroups(r, c);
+    }
+}/*}}}*/
+
+void determineGroups(int cur_r, int cur_c)
+{/*{{{*/
+    short *groups = NULL;
+    short *idxs = NULL;
+    short lastIdx = 1;
+    short oldIdx = 0;
+    short neighbors[5];
+    int neighborsLibs[5];
+    int r, c, sz, i, j;
+    int bFoundElem;
+
+    assert( curBoard != NULL );
+
+    sz = curBoard->size;
+
+    /* TODO: only two rows are necessary! */
+    groups = (short *) malloc(sizeof(short) * sz * sz);
+    idxs = (short *) malloc(sizeof(short) * sz * sz);
+
+    /* init index list */
+    for (r=0; r<(sz*sz); r++) {
+        idxs[r] = r-1;
+        groups[r] = 99;
+    }
+
+    for (r=0; r<sz; r++) {
+        for (c=0; c<sz; c++) {
+            if (curBoard->board[c * sz + r].field_type == FIELD_EMPTY) {
+                groups[c * sz + r] = 0;
+                continue;
+            }
+
+            if (r == 0 && c == 0) {
+                groups[c * sz + r] = lastIdx;
+                lastIdx += 1;
+            } else if (r == 0 && c > 0) {
+                if (curBoard->board[c * sz + r].field_type == curBoard->board[(c-1) * sz + r].field_type) {
+                    groups[c * sz + r] = groups[(c-1) * sz + r];
+                } else {
+                    groups[c * sz + r] = lastIdx;
+                    lastIdx += 1;
+                }
+            } else if (r > 0 && c == 0) {
+                if (curBoard->board[c * sz + r].field_type == curBoard->board[c * sz + (r-1)].field_type) {
+                    groups[c * sz + r] = groups[c * sz + (r-1)];
+                } else {
+                    groups[c * sz + r] = lastIdx;
+                    lastIdx += 1;
+                }
+            } else {
+                if (curBoard->board[c * sz + r].field_type != curBoard->board[c * sz + (r-1)].field_type 
+                    && curBoard->board[c * sz + r].field_type != curBoard->board[(c-1) * sz + r].field_type) {
+                    groups[c * sz + r] = lastIdx;
+                    lastIdx += 1;
+                } else if (curBoard->board[c * sz + r].field_type == curBoard->board[c * sz + (r-1)].field_type 
+                           && curBoard->board[c * sz + r].field_type != curBoard->board[(c-1) * sz + r].field_type) {
+                    groups[c * sz + r] = groups[c * sz + (r-1)];
+                } else if (curBoard->board[c * sz + r].field_type != curBoard->board[c * sz + (r-1)].field_type 
+                           && curBoard->board[c * sz + r].field_type == curBoard->board[(c-1) * sz + r].field_type) {
+                    groups[c * sz + r] = groups[(c-1) * sz + r];
+                } else if (curBoard->board[c * sz + r].field_type == curBoard->board[c * sz + (r-1)].field_type 
+                           && curBoard->board[c * sz + r].field_type == curBoard->board[(c-1) * sz + r].field_type) {
+                    groups[c * sz + r] = groups[c * sz + (r-1)];
+                    oldIdx = idxs[groups[(c-1) * sz + r]];
+                    for (i=0; i<lastIdx; i++) {
+                        if (idxs[i] == oldIdx)
+                            idxs[i] = idxs[groups[c * sz + r]];
+                    }
+                }
+            }
+        }
+    }
+
+    // /* print groups and idxs[groups] */
+    // fprintf(stderr, "Idxs: ");
+    // for (i=0; i<lastIdx; i++) {
+        // fprintf(stderr, "I[%d]=%d, ", i, idxs[i]);
+    // }
+    // fprintf(stderr, "\n");
+    // for (r=0; r<sz; r++) {
+        // for (c=0; c<sz; c++) {
+            // fprintf(stderr, "%2d ", groups[c * sz + r]);
+        // }
+        // fprintf(stderr, "    ");
+        // for (c=0; c<sz; c++) {
+            // fprintf(stderr, "%2d ", idxs[groups[c * sz + r]]);
+        // }
+        // fprintf(stderr, "\n");
+    // }
+
+    /* create consistent numbers in groups */
+    for (r=0; r<sz; r++) {
+        for (c=0; c<sz; c++) {
+            groups[c * sz + r] = idxs[groups[c * sz + r]];
+        }
+    }
+
+    /* get neighbor groups for current stone */
+    i = 0;
+    if ((cur_r - 1) >= 0 && groups[cur_c * sz + (cur_r - 1)] >= 0) {
+        neighbors[i] = groups[cur_c * sz + (cur_r - 1)];
+        neighborsLibs[i] = 0;
+        i += 1;
+    }
+    if ((cur_r + 1) < sz && groups[cur_c * sz + (cur_r + 1)] >= 0) {
+        bFoundElem = 0;
+        for (j=0; j<i; j++) {
+            if (neighbors[j] == groups[cur_c * sz + (cur_r + 1)])
+                bFoundElem = 1;
+        }
+        if (!bFoundElem) {
+            neighbors[i] = groups[cur_c * sz + (cur_r + 1)];
+            neighborsLibs[i] = 0;
+            i += 1;
+        }
+    }
+    if ((cur_c - 1) >= 0 && groups[(cur_c - 1) * sz + cur_r] >= 0) {
+        bFoundElem = 0;
+        for (j=0; j<i; j++) {
+            if (neighbors[j] == groups[(cur_c - 1) * sz + cur_r])
+                bFoundElem = 1;
+        }
+        if (!bFoundElem) {
+            neighbors[i] = groups[(cur_c - 1) * sz + cur_r];
+            neighborsLibs[i] = 0;
+            i += 1;
+        }
+    }
+    if ((cur_c + 1) < sz && groups[(cur_c + 1) * sz + cur_r] >= 0) {
+        bFoundElem = 0;
+        for (j=0; j<i; j++) {
+            if (neighbors[j] == groups[(cur_c + 1) * sz + cur_r])
+                bFoundElem = 1;
+        }
+        if (!bFoundElem) {
+            neighbors[i] = groups[(cur_c + 1) * sz + cur_r];
+            neighborsLibs[i] = 0;
+            i += 1;
+        }
+    }
+    neighbors[i] = -1; /* terminal indicator */
+
+    /* determine number of liberties for each neighbor group */
+    for (r=0; r<sz; r++) {
+        for (c=0; c<sz; c++) {
+            if (groups[c * sz + r] < 0)
+                continue;
+
+            for (i=0; neighbors[i] >= 0; i++) {
+                if (groups[c * sz + r] != neighbors[i])
+                    continue;
+
+                if ((r-1) >= 0 && groups[c * sz + (r-1)] == -1)
+                    neighborsLibs[i] += 1;
+                if ((r+1) < sz && groups[c * sz + (r+1)] == -1)
+                    neighborsLibs[i] += 1;
+                if ((c-1) >= 0 && groups[(c-1) * sz + r] == -1)
+                    neighborsLibs[i] += 1;
+                if ((c+1) < sz && groups[(c+1) * sz + r] == -1)
+                    neighborsLibs[i] += 1;
+            }
+        }
+    }
+
+    /* remove groups with no liberties */
+    for (i=0; neighbors[i] >= 0; i++) {
+        if (neighborsLibs[i] > 0)
+            continue;
+
+        for (r=0; r<sz; r++) {
+            for (c=0; c<sz; c++) {
+                if (groups[c * sz + r] == neighbors[i]) {
+                    curBoard->board[c * curBoard->size + r].field_type = FIELD_EMPTY;
+                }
+            }
+        }
+    }
+
+    // /* print groups */
+    // for (r=0; r<sz; r++) {
+        // for (c=0; c<sz; c++) {
+            // fprintf(stderr, "%2d ", groups[c * sz + r]);
+        // }
+        // fprintf(stderr, "\n");
+    // }
+    // /* print neighbor groups and number of libs */
+    // fprintf(stderr, "Neighbor groups (+ num libs) of current stone [%d,%d]: ", cur_r, cur_c);
+    // for (i=0; neighbors[i] >= 0; i++)
+        // fprintf(stderr, "%d (%d), ", neighbors[i], neighborsLibs[i]);
+    // fprintf(stderr, "\n");
+
+
+    free(idxs);
+    free(groups);
+
 }/*}}}*/
 
 void board_cleanup()
