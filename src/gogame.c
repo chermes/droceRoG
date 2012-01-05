@@ -167,8 +167,6 @@ void gogame_draw_fullrepaint()
 {/*{{{*/
     char msg[1024];
 
-    assert( gameTree != NULL );
-
     ClearScreen();
 
     /* draw title */
@@ -194,7 +192,8 @@ void gogame_draw_fullrepaint()
 
 void gogame_printGameInfo()
 {/*{{{*/
-    assert(gameTree != NULL);
+    if (gameTree == NULL)
+        return;
 
     fprintf(stderr, "GAME INFO   Black: %s [%s], White: %s [%s]\n", gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank);
     fprintf(stderr, "            Board size %d x %d\n", gameInfo.boardSize, gameInfo.boardSize);
@@ -225,5 +224,29 @@ void readGameInfo()
         gameInfo.time = 0;
     GET_CHAR_PROP("OT", gameInfo.overtime);
     GET_CHAR_PROP("RU", gameInfo.ruleset);
+}/*}}}*/
+
+void gogame_move_forward()
+{/*{{{*/
+    if (gameTree == NULL)
+        return;
+}/*}}}*/
+
+void gogame_move_back()
+{/*{{{*/
+    if (gameTree == NULL)
+        return;
+}/*}}}*/
+
+void gogame_moveVar_down()
+{/*{{{*/
+    if (gameTree == NULL)
+        return;
+}/*}}}*/
+
+void gogame_moveVar_up()
+{/*{{{*/
+    if (gameTree == NULL)
+        return;
 }/*}}}*/
 

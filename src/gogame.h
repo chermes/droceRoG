@@ -19,6 +19,11 @@ void gogame_printGameInfo();
 
 void gogame_draw_fullrepaint();
 
+void gogame_move_forward();
+void gogame_move_back();
+void gogame_moveVar_down();
+void gogame_moveVar_up();
+
 #ifdef __cplusplus
 }
 #endif

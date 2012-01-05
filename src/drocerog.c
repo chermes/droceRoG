@@ -75,19 +75,19 @@ int main_handler(int type, int par1, int par2)
                 break;
 
             case KEY_UP:
-                msg("KEY_UP");
+                gogame_moveVar_up();
                 break;
 
             case KEY_DOWN:
-                msg("KEY_DOWN");
+                gogame_moveVar_down();
                 break;
 
             case KEY_NEXT:
-                msg("KEY_NEXT");
+                gogame_move_forward();
                 break;
 
             case KEY_PREV:
-                msg("KEY_PREV");
+                gogame_move_back();
                 break;
 
             case KEY_MENU:
