@@ -141,11 +141,11 @@ void test_readSGF()
         for (prop = cur->props; prop; prop = prop->next) {
             switch (prop->name) {
                 case ENC_SGFPROP('A', 'W'):
-                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK);
+                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE);
                     break;
 
                 case ENC_SGFPROP('A', 'B'):
-                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE);
+                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK);
                     break;
 
                 case ENC_SGFPROP('B', ' '):
