@@ -42,6 +42,8 @@ typedef struct {
 /******************************************************************************/
 
 static SGFTree *gameTree = NULL; /* game tree */
+static SGFNode *curNode = NULL; /* current node in the game tree */
+
 static GameInfo gameInfo;
 
 static DrawProperties drawProperties;
@@ -73,13 +75,14 @@ int gogame_new_from_file(const char *filename)
 
     if (!sgftree_readfile(gameTree, filename))
         return 0;
+    curNode = gameTree->root;
 
     readGameInfo();
     initDrawProperties();
 
     board_new(gameInfo.boardSize, drawProperties.fontSize * 2 + drawProperties.fontSpace * 3);
 
-    test_readSGF();
+    /* test_readSGF(); */
 
     return 1;
 }/*}}}*/
@@ -92,6 +95,7 @@ void gogame_cleanup()
         sgftree_clear(gameTree);
         free(gameTree);
         gameTree = NULL;
+        curNode = NULL;
 
         /* cleanup other game info */
         gameInfo.black.name = NULL;
@@ -190,6 +194,12 @@ void gogame_draw_fullrepaint()
 
 }/*}}}*/
 
+void gogame_draw_update()
+{/*{{{*/
+    if (gameTree != NULL)
+        board_draw_update(1);
+}/*}}}*/
+
 void gogame_printGameInfo()
 {/*{{{*/
     if (gameTree == NULL)
@@ -228,8 +238,40 @@ void readGameInfo()
 
 void gogame_move_forward()
 {/*{{{*/
+    SGFProperty *prop = NULL;
+    int r, c;
+
     if (gameTree == NULL)
         return;
+
+    /* do nothing, if no continuation in this variation exists */
+    if (!curNode->child) 
+        return;
+    curNode = curNode->child;
+
+    /* for all properties in this move */
+    for (prop = curNode->props; prop; prop = prop->next) {
+        r = prop->value[1] - 'a';
+        c = prop->value[0] - 'a';
+        switch (prop->name) {
+            case ENC_SGFPROP('A', 'W'):
+                board_placeStone(r, c, BOARD_WHITE, 0);
+                break;
+
+            case ENC_SGFPROP('A', 'B'):
+                board_placeStone(r, c, BOARD_BLACK, 0);
+                break;
+
+            case ENC_SGFPROP('B', ' '):
+                board_placeStone(r, c, BOARD_BLACK, 1);
+                break;
+
+            case ENC_SGFPROP('W', ' '):
+                board_placeStone(r, c, BOARD_WHITE, 1);
+                break;
+        }
+    }
+
 }/*}}}*/
 
 void gogame_move_back()

@@ -56,7 +56,8 @@ int main_handler(int type, int par1, int par2)
 
     }
 
-    if (type == EVT_KEYPRESS) {
+    // if (type == EVT_KEYPRESS) {
+    if (type == EVT_KEYUP) {
         switch (par1) {
             case KEY_OK:
                 msg("KEY_OK");
@@ -76,18 +77,22 @@ int main_handler(int type, int par1, int par2)
 
             case KEY_UP:
                 gogame_moveVar_up();
+                gogame_draw_update();
                 break;
 
             case KEY_DOWN:
                 gogame_moveVar_down();
+                gogame_draw_update();
                 break;
 
             case KEY_NEXT:
                 gogame_move_forward();
+                gogame_draw_update();
                 break;
 
             case KEY_PREV:
                 gogame_move_back();
+                gogame_draw_update();
                 break;
 
             case KEY_MENU:

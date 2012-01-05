@@ -18,6 +18,7 @@ void gogame_cleanup();
 void gogame_printGameInfo();
 
 void gogame_draw_fullrepaint();
+void gogame_draw_update();
 
 void gogame_move_forward();
 void gogame_move_back();

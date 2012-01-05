@@ -181,10 +181,12 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
     switch (player) {
         case BOARD_BLACK:
             curBoard->board[c * curBoard->size + r].field_type = FIELD_BLACK;
+            curBoard->board[c * curBoard->size + r].draw_update = 1;
             break;
 
         case BOARD_WHITE:
             curBoard->board[c * curBoard->size + r].field_type = FIELD_WHITE;
+            curBoard->board[c * curBoard->size + r].draw_update = 1;
             break;
     }
 
@@ -366,7 +368,8 @@ void clearDeadGroups(int cur_r, int cur_c)
         for (r=0; r<sz; r++) {
             for (c=0; c<sz; c++) {
                 if (groups[c * sz + r] == neighbors[i]) {
-                    curBoard->board[c * curBoard->size + r].field_type = FIELD_EMPTY;
+                    curBoard->board[c * sz + r].field_type = FIELD_EMPTY;
+                    curBoard->board[c * sz + r].draw_update = 1;
                 }
             }
         }
@@ -465,6 +468,8 @@ void board_draw_update(int bPartialUpdate)
 
                 if (bPartialUpdate)
                     PartialUpdate(x, y, curBoard->draw_elemSize, curBoard->draw_elemSize);
+
+                curBoard->board[i].draw_update = 0;
             }
 
         }
