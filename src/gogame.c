@@ -54,10 +54,13 @@ static char *str_unknown = "unknown";
     if (!sgfGetCharProperty(gameTree->root, name__, &ref__)) \
         ref__ = str_unknown;
 
+#define ENC_SGFPROP(c1_, c2_) ((short)( c1_ | c2_ << 8 ))
+
 /******************************************************************************/
 
 void readGameInfo();
 void initDrawProperties();
+void test_readSGF();
 
 /******************************************************************************/
 
@@ -75,6 +78,8 @@ int gogame_new_from_file(const char *filename)
     initDrawProperties();
 
     board_new(gameInfo.boardSize, drawProperties.fontSize * 2 + drawProperties.fontSpace * 3);
+
+    test_readSGF();
 
     return 1;
 }/*}}}*/
@@ -117,6 +122,42 @@ void initDrawProperties()
     drawProperties.fontSize  = (int) ((double)ScreenWidth() / 600.0 * 12.0);
     drawProperties.fontSpace = (int) ((double)ScreenWidth() / 600.0 * 4.0);
     drawProperties.font_ttf = OpenFont("DejaVuSerif", drawProperties.fontSize, 1);
+}/*}}}*/
+
+void test_readSGF()
+{/*{{{*/
+    SGFNode *cur = NULL;
+    SGFProperty *prop = NULL;
+
+    /* test: list all properties in the main path, ignoring children */
+    for (cur = gameTree->root; cur; cur = cur->child) {
+        /* list all properties */
+        for (prop = cur->props; prop; prop = prop->next) {
+            fprintf(stderr, "%c%c[%s] ",
+                prop->name & 255, prop->name >> 8, prop->value );
+        }
+        fprintf(stderr, "\n");
+
+        for (prop = cur->props; prop; prop = prop->next) {
+            switch (prop->name) {
+                case ENC_SGFPROP('A', 'W'):
+                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK);
+                    break;
+
+                case ENC_SGFPROP('A', 'B'):
+                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE);
+                    break;
+
+                case ENC_SGFPROP('B', ' '):
+                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK);
+                    break;
+
+                case ENC_SGFPROP('W', ' '):
+                    board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE);
+                    break;
+            }
+        }
+    }
 }/*}}}*/
 
 void gogame_draw_fullrepaint()

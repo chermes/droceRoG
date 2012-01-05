@@ -6,6 +6,8 @@
 #ifndef GOBOARD_H
 #define GOBOARD_H
 
+typedef enum { BOARD_BLACK, BOARD_WHITE } BoardPlayer;
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -25,6 +27,9 @@ void board_print();
  *      the FullUpdate() call is left to user.
  * */
 void board_draw_update(int bPartialUpdate);
+
+void board_placeStone(int r, int c, BoardPlayer player);
+// void board_placeStone(int x, int y, BoardPlayer, *removedList);
 
 /******************************************************************************/
 

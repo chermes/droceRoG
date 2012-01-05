@@ -166,6 +166,25 @@ void board_test_placeStones()
     curBoard->board[5 * curBoard->size + 5].field_type = FIELD_WHITE;
 }/*}}}*/
 
+void board_placeStone(int r, int c, BoardPlayer player)
+{/*{{{*/
+    assert( curBoard != NULL );
+    assert( r >= 0 );
+    assert( c >= 0 );
+    assert( r < curBoard->size );
+    assert( c < curBoard->size );
+
+    switch (player) {
+        case BOARD_BLACK:
+            curBoard->board[c * curBoard->size + r].field_type = FIELD_BLACK;
+            break;
+
+        case BOARD_WHITE:
+            curBoard->board[c * curBoard->size + r].field_type = FIELD_WHITE;
+            break;
+    }
+}/*}}}*/
+
 void board_cleanup()
 {/*{{{*/
     if (curBoard != NULL) {
