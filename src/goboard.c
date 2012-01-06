@@ -424,8 +424,15 @@ void board_print()
 void board_draw_update(int bPartialUpdate)
 {/*{{{*/
     int r, c, i, x, y;
+    int r_min, r_max, c_min, c_max;
 
     assert( curBoard != NULL );
+
+    /* init min and max values with unreachable numbers */
+    r_min = curBoard->size;
+    r_max = -1;
+    c_min = curBoard->size;
+    c_max = -1;
 
     SetFont(curBoard->draw_font, BLACK);
 
@@ -433,10 +440,16 @@ void board_draw_update(int bPartialUpdate)
         for (c=0; c<curBoard->size; c++) {
             i = c * curBoard->size + r;
             x = curBoard->draw_offset_x + c * curBoard->draw_elemSize;
-            y = curBoard->draw_offset_y + curBoard->draw_elemSize * r;
+            y = curBoard->draw_offset_y + r * curBoard->draw_elemSize;
 
             /* check if update necessary */
             if (curBoard->board[i].draw_update) {
+
+                if (r_min > r) r_min = r;
+                if (r_max < r) r_max = r;
+                if (c_min > c) c_min = c;
+                if (c_max < c) c_max = c;
+
                 if (bPartialUpdate)
                     FillArea(x, y, curBoard->draw_elemSize, curBoard->draw_elemSize, WHITE);
 
@@ -466,17 +479,25 @@ void board_draw_update(int bPartialUpdate)
                         break;
                 }
 
-                if (bPartialUpdate)
-                    PartialUpdate(x, y, curBoard->draw_elemSize, curBoard->draw_elemSize);
+                // if (bPartialUpdate)
+                    // PartialUpdate(x, y, curBoard->draw_elemSize, curBoard->draw_elemSize);
 
                 curBoard->board[i].draw_update = 0;
             }
-
         }
+
     }
     /*
     if (bPartialUpdate)
         PartialUpdate(0, curBoard->draw_offset_y, curBoard->draw_elemSize * curBoard->size, curBoard->draw_elemSize * curBoard->size);
     */
+
+    if (bPartialUpdate && r_min < curBoard->size) { /* ... && any element updated? */
+        fprintf(stderr, "r_min = %d, r_max = %d, c_min = %d, c_max = %d\n", r_min, r_max, c_min, c_max);
+        x = curBoard->draw_offset_x + c_min * curBoard->draw_elemSize;
+        y = curBoard->draw_offset_y + r_min * curBoard->draw_elemSize;
+        PartialUpdate(x, y, curBoard->draw_elemSize * (c_max - c_min + 1), curBoard->draw_elemSize * (r_max - r_min + 1));
+    }
+
 }/*}}}*/
 
