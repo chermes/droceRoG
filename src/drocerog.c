@@ -49,8 +49,8 @@ int main_handler(int type, int par1, int par2)
         retVal = gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
         // retVal = gogame_new_from_file("/mnt/ext1/applications/8457-Dieter-bakhtiari-joeseki.sgf");
 
-        // retVal = gogame_new_from_file("/mnt/ext1/applications/testSGF.sgf");
         // retVal = gogame_new_from_file("testSGF.sgf");
+        // retVal = gogame_new_from_file("/mnt/ext1/applications/testSGF.sgf");
 
         if (retVal > 0) {
             snprintf(message, sizeof(message), "Could not open sgf file. return value = %d", retVal);

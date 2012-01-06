@@ -61,13 +61,33 @@ typedef struct
 
 enum BOOL { FALSE, TRUE };
 
+typedef struct ListElem_s {
+    struct ListElem_s *next;
+    int data;               /* FieldType and MarkerType are integers (enum) */
+    int r;                  /* element placed on pos (r,c) */
+    int c;
+} ListElem;
+
+typedef struct HistoryElem_s {
+    struct HistoryElem_s *prev;
+    ListElem *stones_placed;
+    ListElem *stones_removed;
+    ListElem *marker_set;
+} HistoryElem;
+
 /******************************************************************************/
 
 static GoBoard *curBoard = NULL;
 
+static HistoryElem *history_curNode = NULL;
+
 /******************************************************************************/
 
 void clearDeadGroups(int cur_r, int cur_c);
+void hist_free(HistoryElem *curNode);
+HistoryElem *hist_newElem(HistoryElem *prevElem);   /* prevElem is allowed to be NULL */
+void list_free(ListElem *curNode);
+ListElem *list_newElem(ListElem *prevElem, int r, int c, int data); /* prevElem is allowed to be NULL */
 
 /******************************************************************************/
 
@@ -140,6 +160,40 @@ void board_new(int size, int offset_y)
     curBoard->draw_offset_x = (int) ((ScreenWidth() - curBoard->draw_elemSize * size) / 2);
     curBoard->draw_offset_y = offset_y;
 
+    /* init history */
+    history_curNode = hist_newElem(NULL);
+
+}/*}}}*/
+
+HistoryElem *hist_newElem(HistoryElem *prevElem)
+{/*{{{*/
+    HistoryElem *newElem;
+
+    newElem = (HistoryElem *) malloc(sizeof(HistoryElem));
+    newElem->prev = prevElem;
+    newElem->stones_placed = NULL;
+    newElem->stones_removed = NULL;
+    newElem->marker_set = NULL;
+
+    return newElem;
+}/*}}}*/
+
+ListElem *list_newElem(ListElem *prevElem, int r, int c, int data)
+{/*{{{*/
+    ListElem *newElem;
+
+    newElem = (ListElem *) malloc(sizeof(ListElem));
+    newElem->next = NULL;
+    newElem->r = r;
+    newElem->c = c;
+    newElem->data = data;
+    if (prevElem != NULL) {
+        while (prevElem->next)
+            prevElem = prevElem->next;
+        prevElem->next = newElem;
+    }
+
+    return newElem;
 }/*}}}*/
 
 void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
@@ -153,19 +207,42 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
     switch (player) {
         case BOARD_BLACK:
             curBoard->board[c * curBoard->size + r].field_type = FIELD_BLACK;
-            curBoard->board[c * curBoard->size + r].draw_update = 1;
             break;
 
         case BOARD_WHITE:
             curBoard->board[c * curBoard->size + r].field_type = FIELD_WHITE;
-            curBoard->board[c * curBoard->size + r].draw_update = 1;
             break;
+    }
+    curBoard->board[c * curBoard->size + r].draw_update = 1;
+
+    /* update history */
+    if (bIsMove) /* new move creates a new history element */
+        history_curNode = hist_newElem(history_curNode);
+    if (history_curNode->stones_placed) {
+        list_newElem(history_curNode->stones_placed, r, c, curBoard->board[c * curBoard->size + r].field_type);
+    } else {
+        history_curNode->stones_placed = list_newElem(history_curNode->stones_placed, r, c, curBoard->board[c * curBoard->size + r].field_type);
     }
 
     /* remove stones if necessary */
-    if (bIsMove) {
+    if (bIsMove)
         clearDeadGroups(r, c);
-    }
+
+    // /* print history after this move */
+    // {
+        // HistoryElem *curHist;
+        // ListElem *curLstElem;
+        // for (curHist=history_curNode; curHist; curHist = curHist->prev) {
+            // fprintf(stderr, "H[");
+            // for (curLstElem=curHist->stones_placed; curLstElem; curLstElem=curLstElem->next)
+                // fprintf(stderr, " P[%d,%d]", curLstElem->r, curLstElem->c);
+            // for (curLstElem=curHist->stones_removed; curLstElem; curLstElem=curLstElem->next)
+                // fprintf(stderr, " R[%d,%d]", curLstElem->r, curLstElem->c);
+            // fprintf(stderr, " ]\n <- ");
+        // }
+        // fprintf(stderr, "END \n");
+    // }
+
 }/*}}}*/
 
 void clearDeadGroups(int cur_r, int cur_c)
@@ -340,6 +417,11 @@ void clearDeadGroups(int cur_r, int cur_c)
         for (r=0; r<sz; r++) {
             for (c=0; c<sz; c++) {
                 if (groups[c * sz + r] == neighbors[i]) {
+                    if (history_curNode->stones_removed) {
+                        list_newElem(history_curNode->stones_removed, r, c, curBoard->board[c * sz + r].field_type);
+                    } else {
+                        history_curNode->stones_removed = list_newElem(history_curNode->stones_removed, r, c, curBoard->board[c * sz + r].field_type);
+                    }
                     curBoard->board[c * sz + r].field_type = FIELD_EMPTY;
                     curBoard->board[c * sz + r].draw_update = 1;
                 }
@@ -376,6 +458,39 @@ void board_cleanup()
 
         free(curBoard);
         curBoard = NULL;
+
+        /* free history */
+        if (history_curNode != NULL) {
+            hist_free(history_curNode);
+            history_curNode = NULL;
+        }
+    }
+}/*}}}*/
+
+void hist_free(HistoryElem *curNode)
+{/*{{{*/
+    HistoryElem *prevNode;
+
+    while (curNode) {
+        prevNode = curNode->prev;
+
+        list_free(curNode->stones_placed);
+        list_free(curNode->stones_removed);
+        list_free(curNode->marker_set);
+        free(curNode);
+
+        curNode = prevNode;
+    }
+}/*}}}*/
+
+void list_free(ListElem *curNode)
+{/*{{{*/
+    ListElem *nextNode;
+
+    while (curNode) {
+        nextNode = curNode->next;
+        free(curNode);
+        curNode = nextNode;
     }
 }/*}}}*/
 
@@ -465,7 +580,7 @@ void board_draw_update(int bPartialUpdate)
     */
 
     if (bPartialUpdate && r_min < curBoard->size) { /* ... && any element updated? */
-        fprintf(stderr, "r_min = %d, r_max = %d, c_min = %d, c_max = %d\n", r_min, r_max, c_min, c_max);
+        // fprintf(stderr, "r_min = %d, r_max = %d, c_min = %d, c_max = %d\n", r_min, r_max, c_min, c_max);
         x = curBoard->draw_offset_x + c_min * curBoard->draw_elemSize;
         y = curBoard->draw_offset_y + r_min * curBoard->draw_elemSize;
         PartialUpdate(x, y, curBoard->draw_elemSize * (c_max - c_min + 1), curBoard->draw_elemSize * (r_max - r_min + 1));
