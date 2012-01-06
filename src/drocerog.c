@@ -25,6 +25,8 @@ int main_handler(int type, int par1, int par2)
 {
     // int i=0;
     // char **fonts;
+    int retVal;
+    char message[256];
 
     fprintf(stderr, "[%i %i %i]\n", type, par1, par2);
 
@@ -44,8 +46,16 @@ int main_handler(int type, int par1, int par2)
         // board_print();
         // board_test_placeStones();
 
-        gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
-        // gogame_new_from_file("testSGF.sgf");
+        retVal = gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
+        // retVal = gogame_new_from_file("/mnt/ext1/applications/8457-Dieter-bakhtiari-joeseki.sgf");
+
+        // retVal = gogame_new_from_file("/mnt/ext1/applications/testSGF.sgf");
+        // retVal = gogame_new_from_file("testSGF.sgf");
+
+        if (retVal > 0) {
+            snprintf(message, sizeof(message), "Could not open sgf file. return value = %d", retVal);
+            msg(message);
+        }
         // gogame_new_from_file("testSGF_problem.sgf");
         gogame_printGameInfo();
     }

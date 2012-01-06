@@ -63,18 +63,36 @@ static char *str_unknown = "unknown";
 void readGameInfo();
 void initDrawProperties();
 void test_readSGF();
+void debug_msg(char *s);
+void apply_sgf_cmds_to_board();
 
 /******************************************************************************/
+
+void debug_msg(char *s) 
+{/*{{{*/
+    ifont *times12;
+
+    times12 = OpenFont("DejaVuSerif", 12, 1);
+    FillArea(350, 770, 250, 20, WHITE);
+    SetFont(times12, BLACK);
+    DrawString(350, 770, s);
+    PartialUpdate(350, 770, 250, 20);
+    CloseFont(times12);
+}/*}}}*/
 
 int gogame_new_from_file(const char *filename)
 {/*{{{*/
     gogame_cleanup();
 
     gameTree = (SGFTree *) malloc(sizeof(SGFTree));
+    if (gameTree == NULL)
+        return 1;
     sgftree_clear(gameTree); /* set node pointers to NULL */
 
-    if (!sgftree_readfile(gameTree, filename))
-        return 0;
+    if (!sgftree_readfile(gameTree, filename)) {
+        gogame_cleanup();
+        return 2;
+    }
     curNode = gameTree->root;
 
     readGameInfo();
@@ -82,9 +100,10 @@ int gogame_new_from_file(const char *filename)
 
     board_new(gameInfo.boardSize, drawProperties.fontSize * 2 + drawProperties.fontSpace * 3);
 
+    apply_sgf_cmds_to_board();
     /* test_readSGF(); */
 
-    return 1;
+    return 0;
 }/*}}}*/
 
 void gogame_cleanup()
@@ -170,21 +189,31 @@ void test_readSGF()
 void gogame_draw_fullrepaint()
 {/*{{{*/
     char msg[1024];
+    ifont *default_ttf;
 
     ClearScreen();
 
-    /* draw title */
-    SetFont(drawProperties.font_ttf, BLACK);
-    snprintf( msg, sizeof(msg),
-        "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
-        gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank, 
-        gameInfo.date, gameInfo.result);
-    DrawString(2, drawProperties.fontSpace, msg);
-    snprintf( msg, sizeof(msg),
-        "Time: %d min (%s), Komi: %s, Handicap: %d, Ruleset: %s",
-        gameInfo.time / 60, gameInfo.overtime,
-        gameInfo.komi, gameInfo.handicap, gameInfo.ruleset);
-    DrawString(2, drawProperties.fontSpace*2+drawProperties.fontSize, msg);
+    if (gameTree != NULL) {
+        /* draw title */
+        SetFont(drawProperties.font_ttf, BLACK);
+        snprintf( msg, sizeof(msg),
+            "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
+            gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank, 
+            gameInfo.date, gameInfo.result);
+        DrawString(2, drawProperties.fontSpace, msg);
+        snprintf( msg, sizeof(msg),
+            "Time: %d min (%s), Komi: %s, Handicap: %d, Ruleset: %s",
+            gameInfo.time / 60, gameInfo.overtime,
+            gameInfo.komi, gameInfo.handicap, gameInfo.ruleset);
+        DrawString(2, drawProperties.fontSpace*2+drawProperties.fontSize, msg);
+    } else {
+        default_ttf = OpenFont("DejaVuSerif", 12, 1);
+        SetFont(default_ttf, BLACK);
+        DrawString(5, 20, "droceRoG - Go Game Record Viewer");
+        DrawString(5, 40, "Author: Christoph Hermes (hermes<at>hausmilbe<dot>net)");
+        DrawString(5, 70, "Please open a file by pressing the Menu symbol on the right side.");
+        CloseFont(default_ttf);
+    }
 
     /* draw go board, if an SGF is loaded */
     if (gameTree != NULL)
@@ -238,9 +267,6 @@ void readGameInfo()
 
 void gogame_move_forward()
 {/*{{{*/
-    SGFProperty *prop = NULL;
-    int r, c;
-
     if (gameTree == NULL)
         return;
 
@@ -248,6 +274,17 @@ void gogame_move_forward()
     if (!curNode->child) 
         return;
     curNode = curNode->child;
+
+    apply_sgf_cmds_to_board();
+
+}/*}}}*/
+
+void apply_sgf_cmds_to_board()
+{/*{{{*/
+    SGFProperty *prop = NULL;
+    int r, c;
+
+    assert(gameTree != NULL);
 
     /* for all properties in this move */
     for (prop = curNode->props; prop; prop = prop->next) {
@@ -271,7 +308,6 @@ void gogame_move_forward()
                 break;
         }
     }
-
 }/*}}}*/
 
 void gogame_move_back()
