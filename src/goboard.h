@@ -33,10 +33,11 @@ void board_draw_update(int bPartialUpdate);
  */
 void board_placeStone(int r, int c, BoardPlayer player, int bIsMove);
 
-/******************************************************************************/
+/* Undo current move. Returns 1 if successful, and 0 if not.
+ */
+int board_undo();
 
-/* place some test stones and markers */
-void board_test_placeStones();
+/******************************************************************************/
 
 #ifdef __cplusplus
 }

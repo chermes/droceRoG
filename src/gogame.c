@@ -314,6 +314,9 @@ void gogame_move_back()
 {/*{{{*/
     if (gameTree == NULL)
         return;
+
+    if (board_undo())
+        curNode = curNode->parent;
 }/*}}}*/
 
 void gogame_moveVar_down()

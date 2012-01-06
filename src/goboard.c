@@ -245,6 +245,48 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
 
 }/*}}}*/
 
+int board_undo()
+{/*{{{*/
+    HistoryElem *oldHist = NULL;
+    ListElem *curLstElem = NULL;
+
+    assert( curBoard != NULL );
+    assert( history_curNode != NULL );
+
+    /* check if undo is possible */
+    if (!history_curNode->prev)
+        return 0;
+
+    oldHist = history_curNode;
+    history_curNode = history_curNode->prev;
+
+    /* undo stone removal */
+    for (curLstElem=oldHist->stones_removed; curLstElem; curLstElem=curLstElem->next) {
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].field_type = curLstElem->data;
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].draw_update = 1;
+    }
+    /* undo stone placement */
+    for (curLstElem=oldHist->stones_placed; curLstElem; curLstElem=curLstElem->next) {
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].field_type = FIELD_EMPTY;
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].draw_update = 1;
+    }
+    /* undo marker */
+    for (curLstElem=oldHist->marker_set; curLstElem; curLstElem=curLstElem->next) {
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].marker_type = MARKER_EMPTY;
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].draw_update = 1;
+    }
+    for (curLstElem=history_curNode->marker_set; curLstElem; curLstElem=curLstElem->next) {
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].marker_type = curLstElem->data;
+        curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].draw_update = 1;
+    }
+
+    /* unchain old history element and delete it */
+    oldHist->prev = NULL;
+    hist_free(oldHist);
+
+    return 1;
+}/*}}}*/
+
 void clearDeadGroups(int cur_r, int cur_c)
 {/*{{{*/
     short *groups = NULL;
