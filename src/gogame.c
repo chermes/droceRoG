@@ -282,29 +282,26 @@ void gogame_move_forward()
 void apply_sgf_cmds_to_board()
 {/*{{{*/
     SGFProperty *prop = NULL;
-    int r, c;
 
     assert(gameTree != NULL);
 
     /* for all properties in this move */
     for (prop = curNode->props; prop; prop = prop->next) {
-        r = prop->value[1] - 'a';
-        c = prop->value[0] - 'a';
         switch (prop->name) {
             case ENC_SGFPROP('A', 'W'):
-                board_placeStone(r, c, BOARD_WHITE, 0);
+                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE, 0);
                 break;
 
             case ENC_SGFPROP('A', 'B'):
-                board_placeStone(r, c, BOARD_BLACK, 0);
+                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK, 0);
                 break;
 
             case ENC_SGFPROP('B', ' '):
-                board_placeStone(r, c, BOARD_BLACK, 1);
+                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK, 1);
                 break;
 
             case ENC_SGFPROP('W', ' '):
-                board_placeStone(r, c, BOARD_WHITE, 1);
+                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE, 1);
                 break;
         }
     }
