@@ -142,34 +142,6 @@ void board_new(int size, int offset_y)
 
 }/*}}}*/
 
-void board_test_placeStones()
-{/*{{{*/
-    assert( curBoard != NULL );
-    assert( curBoard->size > 6 );
-
-    curBoard->board[2 * curBoard->size + 2].field_type = FIELD_BLACK;
-    curBoard->board[3 * curBoard->size + 2].field_type = FIELD_WHITE;
-
-    curBoard->board[2 * curBoard->size + 3].marker_type = MARKER_KO;
-    curBoard->board[3 * curBoard->size + 3].marker_type = MARKER_SQUARE;
-    curBoard->board[4 * curBoard->size + 3].marker_type = MARKER_TRIANGLE;
-    curBoard->board[5 * curBoard->size + 3].marker_type = MARKER_CIRC;
-
-    curBoard->board[3 * curBoard->size + 4].marker_type = MARKER_SQUARE;
-    curBoard->board[3 * curBoard->size + 4].field_type = FIELD_BLACK;
-    curBoard->board[4 * curBoard->size + 4].marker_type = MARKER_TRIANGLE;
-    curBoard->board[4 * curBoard->size + 4].field_type = FIELD_BLACK;
-    curBoard->board[5 * curBoard->size + 4].marker_type = MARKER_CIRC;
-    curBoard->board[5 * curBoard->size + 4].field_type = FIELD_BLACK;
-
-    curBoard->board[3 * curBoard->size + 5].marker_type = MARKER_SQUARE;
-    curBoard->board[3 * curBoard->size + 5].field_type = FIELD_WHITE;
-    curBoard->board[4 * curBoard->size + 5].marker_type = MARKER_TRIANGLE;
-    curBoard->board[4 * curBoard->size + 5].field_type = FIELD_WHITE;
-    curBoard->board[5 * curBoard->size + 5].marker_type = MARKER_CIRC;
-    curBoard->board[5 * curBoard->size + 5].field_type = FIELD_WHITE;
-}/*}}}*/
-
 void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
 {/*{{{*/
     assert( curBoard != NULL );
