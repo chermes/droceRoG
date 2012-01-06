@@ -37,12 +37,17 @@ typedef struct {
     int fontSize;
     int fontSpace;
     ifont *font_ttf;
+    int info_y; /* beginning of comment and variation window */
+    int comment_width; /* width of comment window */
 } DrawProperties;
 
 /******************************************************************************/
 
 static SGFTree *gameTree = NULL; /* game tree */
 static SGFNode *curNode = NULL; /* current node in the game tree */
+
+static char *comment_str = NULL;
+static int comment_update = 0;
 
 static GameInfo gameInfo;
 
@@ -65,6 +70,7 @@ void initDrawProperties();
 void test_readSGF();
 void debug_msg(char *s);
 void apply_sgf_cmds_to_board();
+void updateCommentStr();
 
 /******************************************************************************/
 
@@ -102,6 +108,8 @@ int gogame_new_from_file(const char *filename)
 
     apply_sgf_cmds_to_board();
     /* test_readSGF(); */
+
+    updateCommentStr();
 
     return 0;
 }/*}}}*/
@@ -145,6 +153,9 @@ void initDrawProperties()
     drawProperties.fontSize  = (int) ((double)ScreenWidth() / 600.0 * 12.0);
     drawProperties.fontSpace = (int) ((double)ScreenWidth() / 600.0 * 4.0);
     drawProperties.font_ttf = OpenFont("DejaVuSerif", drawProperties.fontSize, 1);
+    drawProperties.info_y = drawProperties.fontSize * 2 + drawProperties.fontSpace * 2
+                            + ScreenWidth();
+    drawProperties.comment_width = (int) ((double)ScreenWidth() / 3.0 * 2.0);
 }/*}}}*/
 
 void test_readSGF()
@@ -206,6 +217,18 @@ void gogame_draw_fullrepaint()
             gameInfo.time / 60, gameInfo.overtime,
             gameInfo.komi, gameInfo.handicap, gameInfo.ruleset);
         DrawString(2, drawProperties.fontSpace*2+drawProperties.fontSize, msg);
+
+        /* draw comment window */
+        if (comment_str != NULL) {
+            SetFont(drawProperties.font_ttf, BLACK);
+            DrawTextRect( 5, drawProperties.info_y,
+                          drawProperties.comment_width, ScreenHeight() - drawProperties.info_y,
+                          comment_str,
+                          ALIGN_LEFT | VALIGN_TOP );
+            comment_update = 0;
+            // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProperties.info_y,
+                    // drawProperties.comment_width, ScreenHeight() - drawProperties.info_y);
+        }
     } else {
         default_ttf = OpenFont("DejaVuSerif", 12, 1);
         SetFont(default_ttf, BLACK);
@@ -227,6 +250,61 @@ void gogame_draw_update()
 {/*{{{*/
     if (gameTree != NULL)
         board_draw_update(1);
+
+    if (comment_update) {
+        FillArea(5, drawProperties.info_y,
+                 drawProperties.comment_width, ScreenHeight() - drawProperties.info_y,
+                 WHITE);
+        if (comment_str != NULL) {
+            SetFont(drawProperties.font_ttf, BLACK);
+            DrawTextRect( 5, drawProperties.info_y,
+                          drawProperties.comment_width, ScreenHeight() - drawProperties.info_y,
+                          comment_str,
+                          ALIGN_LEFT | VALIGN_TOP );
+            // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProperties.info_y,
+                    // drawProperties.comment_width, ScreenHeight() - drawProperties.info_y);
+        } 
+
+        PartialUpdate(5, drawProperties.info_y,
+                      drawProperties.comment_width, ScreenHeight() - drawProperties.info_y);
+        comment_update = 0;
+    }
+}/*}}}*/
+
+void updateCommentStr()
+{/*{{{*/
+    char *msg; 
+    char *ptr1, *ptr2;
+
+    assert(gameTree != NULL);
+    assert(curNode != NULL);
+
+    if (!sgfGetCharProperty(curNode, "C ", &msg))
+        msg = NULL;
+
+    if (msg == NULL) {
+        if (comment_str != NULL) {
+            comment_str = msg;
+            comment_update = 1;
+            return;
+        } else {
+            comment_update = 0;
+            return;
+        }
+    } else {
+        comment_str = msg;
+        comment_update = 1;
+
+        /* remove double '\n' occurrences */
+        for (ptr1 = strstr(msg, "\n"); ptr1; ptr1 = strstr(ptr1+1, "\n")) {
+            ptr2 = ptr1 + 1;
+            while (*ptr2 == ' ')
+                ptr2 += 1;
+            if (*ptr2 == '\n')
+                *ptr1 = ' ';
+        }
+    }
+
 }/*}}}*/
 
 void gogame_printGameInfo()
@@ -277,6 +355,7 @@ void gogame_move_forward()
 
     apply_sgf_cmds_to_board();
 
+    updateCommentStr();
 }/*}}}*/
 
 void apply_sgf_cmds_to_board()
@@ -314,17 +393,23 @@ void gogame_move_back()
 
     if (board_undo())
         curNode = curNode->parent;
+
+    updateCommentStr();
 }/*}}}*/
 
 void gogame_moveVar_down()
 {/*{{{*/
     if (gameTree == NULL)
         return;
+
+    updateCommentStr();
 }/*}}}*/
 
 void gogame_moveVar_up()
 {/*{{{*/
     if (gameTree == NULL)
         return;
+
+    updateCommentStr();
 }/*}}}*/
 
