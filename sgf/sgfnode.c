@@ -21,7 +21,8 @@
  * Boston, MA 02111, USA.                                            *
 \* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/*  Parts of this code were given to us by Tommy Thorn */
+/* Parts of this code were given to us by Tommy Thorn */
+/* Modified for usage in droceRoG by Christoph Hermes (hermes<AT>hausmilbe<DOT>net) */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -55,6 +56,8 @@
 #define VERBOSE_WARNINGS 0
 
 #define VERSION " 3.8"
+
+/* Methods not used in droceRoG */
 
 /* ================================================================ */
 /*                     Some utility functions.                      */

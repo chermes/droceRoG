@@ -39,6 +39,8 @@
  * want to redefine these symbols if we include this file into board.h.
  */
 
+/* Modified for usage in droceRoG by Christoph Hermes (hermes<AT>hausmilbe<DOT>net) */
+
 #define EMPTY 0
 #define STONE_WHITE 1
 #define STONE_BLACK 2
