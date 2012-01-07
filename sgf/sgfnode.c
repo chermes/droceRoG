@@ -112,6 +112,8 @@ sgfNewNode()
   newnode->props = NULL;
   newnode->parent = NULL;
   newnode->child = NULL;
+  newnode->prevVar = NULL;
+  newnode->nextVar = NULL;
   return newnode;
 }
 
@@ -1199,48 +1201,88 @@ readsgffilefuseki(const char *filename, int moves_per_game)
 SGFNode *
 readsgffile(const char *filename)
 {
-  SGFNode *root;
-  int tmpi = 0;
+    SGFNode *root;
+    int tmpi = 0;
 
-  if (strcmp(filename, "-") == 0)
-    sgffile = stdin;
-  else
-    sgffile = fopen(filename, "r");
+    if (strcmp(filename, "-") == 0)
+        sgffile = stdin;
+    else
+        sgffile = fopen(filename, "r");
 
-  if (!sgffile)
-    return NULL;
+    if (!sgffile)
+        return NULL;
 
 
-  nexttoken();
-  gametree(&root, NULL, LAX_SGF);
+    nexttoken();
+    gametree(&root, NULL, LAX_SGF);
 
-  if (sgffile != stdin)
-    fclose(sgffile);
+    if (sgffile != stdin)
+        fclose(sgffile);
 
-  if (sgferr) {
-    fprintf(stderr, "Parse error: %s at position %d\n", sgferr, sgferrpos);
-    sgfFreeNode(root);
-    return NULL;
-  }
+    if (sgferr) {
+        fprintf(stderr, "Parse error: %s at position %d\n", sgferr, sgferrpos);
+        sgfFreeNode(root);
+        return NULL;
+    }
 
-  /* perform some simple checks on the file */
-  if (!sgfGetIntProperty(root, "GM", &tmpi)) {
-    if (VERBOSE_WARNINGS)
-      fprintf(stderr, "Couldn't find the game type (GM) attribute!\n");
-  }
-  else if (tmpi != 1) {
-    fprintf(stderr, "SGF file might be for game other than go: %d\n", tmpi);
-    fprintf(stderr, "Trying to load anyway.\n");
-  }
+    /* perform some simple checks on the file */
+    if (!sgfGetIntProperty(root, "GM", &tmpi)) {
+        if (VERBOSE_WARNINGS)
+            fprintf(stderr, "Couldn't find the game type (GM) attribute!\n");
+    }
+    else if (tmpi != 1) {
+        fprintf(stderr, "SGF file might be for game other than go: %d\n", tmpi);
+        fprintf(stderr, "Trying to load anyway.\n");
+    }
 
-  if (!sgfGetIntProperty(root, "FF", &tmpi)) {
-    if (VERBOSE_WARNINGS)
-      fprintf(stderr, "Can not determine SGF spec version (FF)!\n");
-  }
-  else if ((tmpi < 3 || tmpi > 4) && VERBOSE_WARNINGS)
-    fprintf(stderr, "Unsupported SGF spec version: %d\n", tmpi);
+    if (!sgfGetIntProperty(root, "FF", &tmpi)) {
+        if (VERBOSE_WARNINGS)
+            fprintf(stderr, "Can not determine SGF spec version (FF)!\n");
+    }
+    else if ((tmpi < 3 || tmpi > 4) && VERBOSE_WARNINGS)
+        fprintf(stderr, "Unsupported SGF spec version: %d\n", tmpi);
 
-  return root;
+    /* build up variation links with sweep line method */
+    {
+        SGFNode *lst = root;
+        SGFNode *cur_i = NULL;
+        SGFNode *cur_end = NULL;
+        SGFNode *var = NULL;
+
+        /* initialise lst by its next pointers from root SGFNode */
+        /* Assuming there is only one variation at the beginning! */
+        assert( root->next == NULL );
+
+        /* while lst has elements */
+        while (lst) {
+            /* next move for each element (and deleting) */
+            cur_i = lst;
+            lst = NULL; /* save beginning of list */
+            cur_end = NULL; /* current end of list */
+            for (; cur_i; cur_i=cur_i->nextVar) {
+                if (cur_i->child) { /* if child exists, add node to current lst */
+                    if (lst == NULL) {
+                        lst = cur_i->child;
+                        cur_end = cur_i->child;
+                    } else {
+                        cur_end->nextVar = cur_i->child;
+                        cur_end->nextVar->prevVar = cur_end;
+                        cur_end = cur_end->nextVar;
+                    }
+                }
+            }
+            /* check for variations in the new list */
+            for (cur_i=lst; cur_i; cur_i=cur_i->nextVar) {
+                for (var=cur_i->next; var; var=var->next) {
+                    cur_end->nextVar = var;
+                    cur_end->nextVar->prevVar = cur_end;
+                    cur_end = cur_end->nextVar;
+                }
+            }
+        }
+    }
+
+    return root;
 }
 
 

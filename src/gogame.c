@@ -345,8 +345,8 @@ void readGameInfo()
 
 void gogame_move_forward()
 {/*{{{*/
-    int varNum;
-    SGFNode *node;
+    // int varNum;
+    // SGFNode *node;
 
     if (gameTree == NULL)
         return;
@@ -360,14 +360,17 @@ void gogame_move_forward()
 
     updateCommentStr();
 
-    /* check if variation exists */
-    varNum = 0;
-    fprintf(stderr, "Current node: %p\n", curNode);
-    for (node=curNode->next; node; node=node->next) {
-        varNum += 1;
-        fprintf(stderr, "\tVariation %d: parent=%p, child=%p, next=%p\n", 
-                varNum, node->parent, node->child, node->next);
-    }
+    // /* DEBUG: check if variation exists */
+    // varNum = 0;
+    // fprintf(stderr, "Current node with var: ");
+    // for (node=curNode; node; node=node->nextVar)
+        // fprintf(stderr, " %p,", node);
+    // fprintf(stderr, "\n");
+    // for (node=curNode->next; node; node=node->next) {
+        // varNum += 1;
+        // fprintf(stderr, "\tVariation %d: parent=%p, child=%p, next=%p\n", 
+                // varNum, node->parent, node->child, node->next);
+    // }
 }/*}}}*/
 
 void apply_sgf_cmds_to_board()
@@ -413,10 +416,61 @@ void gogame_move_back()
     updateCommentStr();
 }/*}}}*/
 
+void undo_variation(SGFNode *srcNode, SGFNode *targetNode)
+{/*{{{*/
+    SGFNode *srcNode_i, *targetNode_i;
+    SGFNode *pathToTarget = NULL;
+
+    assert(srcNode);
+    assert(targetNode);
+
+    srcNode_i = srcNode;
+    targetNode_i = targetNode;
+
+    /* Find same parent, undo path to srcNode, and record path to targetNode */
+    while (srcNode_i && targetNode_i && srcNode_i != targetNode_i) {
+        if (board_undo())
+            curNode = curNode->parent;
+
+        srcNode_i = srcNode_i->parent;
+
+        if (pathToTarget == NULL) {
+            pathToTarget = sgfNewNode();
+            /* HACK: use "next" pointer as data pointer */
+            pathToTarget->next = targetNode_i;  
+        } else {
+            assert( pathToTarget->parent == NULL );
+            pathToTarget->parent = sgfNewNode();
+            pathToTarget->parent->child = pathToTarget;
+            /* HACK: use "next" pointer as data pointer */
+            pathToTarget->parent->next = targetNode_i;  
+            pathToTarget = pathToTarget->parent;
+        }
+        targetNode_i = targetNode_i->parent;
+    }
+    assert(srcNode_i != NULL);      /* this should never happen */
+    assert(targetNode_i != NULL);
+
+    /* reverse path to target */
+    for (targetNode_i=pathToTarget; targetNode_i; targetNode_i=targetNode_i->child) {
+        curNode = targetNode_i->next;
+        targetNode_i->next = NULL; /* this prevents being freed at the end */
+        apply_sgf_cmds_to_board();
+    }
+
+    /* free path */
+    sgfFreeNode(pathToTarget);
+
+}/*}}}*/
+
 void gogame_moveVar_down()
 {/*{{{*/
     if (gameTree == NULL)
         return;
+    if (curNode->nextVar == NULL)
+        return;
+
+    undo_variation(curNode, curNode->nextVar);
 
     updateCommentStr();
 }/*}}}*/
@@ -425,6 +479,10 @@ void gogame_moveVar_up()
 {/*{{{*/
     if (gameTree == NULL)
         return;
+    if (curNode->prevVar == NULL)
+        return;
+
+    undo_variation(curNode, curNode->prevVar);
 
     updateCommentStr();
 }/*}}}*/
