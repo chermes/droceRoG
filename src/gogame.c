@@ -174,8 +174,8 @@ void test_readSGF()
         fprintf(stderr, "\n");
 
         for (prop = cur->props; prop; prop = prop->next) {
-            r = prop->value[1] - 'a';
-            c = prop->value[0] - 'a';
+            r = get_moveX(prop, gameInfo.boardSize);
+            c = get_moveY(prop, gameInfo.boardSize);
             switch (prop->name) {
                 case ENC_SGFPROP('A', 'W'):
                     board_placeStone(r, c, BOARD_WHITE, 0);
@@ -345,6 +345,9 @@ void readGameInfo()
 
 void gogame_move_forward()
 {/*{{{*/
+    int varNum;
+    SGFNode *node;
+
     if (gameTree == NULL)
         return;
 
@@ -356,31 +359,44 @@ void gogame_move_forward()
     apply_sgf_cmds_to_board();
 
     updateCommentStr();
+
+    /* check if variation exists */
+    varNum = 0;
+    fprintf(stderr, "Current node: %p\n", curNode);
+    for (node=curNode->next; node; node=node->next) {
+        varNum += 1;
+        fprintf(stderr, "\tVariation %d: parent=%p, child=%p, next=%p\n", 
+                varNum, node->parent, node->child, node->next);
+    }
 }/*}}}*/
 
 void apply_sgf_cmds_to_board()
 {/*{{{*/
     SGFProperty *prop = NULL;
+    int sz = 0;
 
     assert(gameTree != NULL);
+
+    sz = gameInfo.boardSize;
 
     /* for all properties in this move */
     for (prop = curNode->props; prop; prop = prop->next) {
         switch (prop->name) {
             case ENC_SGFPROP('A', 'W'):
-                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE, 0);
+                // board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE, 0);
+                board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_WHITE, 0);
                 break;
 
             case ENC_SGFPROP('A', 'B'):
-                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK, 0);
+                board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_BLACK, 0);
                 break;
 
             case ENC_SGFPROP('B', ' '):
-                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_BLACK, 1);
+                board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_BLACK, 1);
                 break;
 
             case ENC_SGFPROP('W', ' '):
-                board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE, 1);
+                board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_WHITE, 1);
                 break;
         }
     }
