@@ -68,6 +68,7 @@ typedef struct SGFNode_t {
   struct SGFNode_t *next;
   struct SGFNode_t *prevVar;    /* droceRoG needs this for faster */
   struct SGFNode_t *nextVar;    /* variation access.              */
+  int draw_lvl;                 /* droceRoG: draw level           */
 } SGFNode;
 
 

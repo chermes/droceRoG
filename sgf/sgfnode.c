@@ -114,6 +114,7 @@ sgfNewNode()
   newnode->child = NULL;
   newnode->prevVar = NULL;
   newnode->nextVar = NULL;
+  newnode->draw_lvl = -1;
   return newnode;
 }
 
@@ -1242,12 +1243,12 @@ readsgffile(const char *filename)
     else if ((tmpi < 3 || tmpi > 4) && VERBOSE_WARNINGS)
         fprintf(stderr, "Unsupported SGF spec version: %d\n", tmpi);
 
-    /* build up variation links with sweep line method */
+    /* droceRoG: build up variation links with sweep line method */
     {
         SGFNode *lst = root;
         SGFNode *cur_i = NULL;
         SGFNode *cur_end = NULL;
-        SGFNode *var = NULL;
+        // SGFNode *var = NULL;
 
         /* initialise lst by its next pointers from root SGFNode */
         /* Assuming there is only one variation at the beginning! */
@@ -1272,14 +1273,56 @@ readsgffile(const char *filename)
                 }
             }
             /* check for variations in the new list */
-            for (cur_i=lst; cur_i; cur_i=cur_i->nextVar) {
-                for (var=cur_i->next; var; var=var->next) {
-                    cur_end->nextVar = var;
-                    cur_end->nextVar->prevVar = cur_end;
+            if (lst) {
+                cur_i = lst->next;
+                while (cur_i) {
+                    cur_end->nextVar = cur_i;
+                    cur_i->prevVar = cur_end;
                     cur_end = cur_end->nextVar;
+
+                    cur_i = cur_i->next;
                 }
             }
         }
+    }
+    fprintf(stderr, "END while(lst)\n");
+
+    /* droceRoG: determine draw level */
+    {
+        SGFNode *curMove = NULL;
+        SGFNode *curVar = NULL;
+        SGFNode *i = NULL, *j = NULL;
+        int lvl = 0;
+
+        /* main variation has level of zero */
+        for (curMove=root; curMove; curMove=curMove->child) 
+            curMove->draw_lvl = 0;
+
+        /* get last element */
+        for (curMove=root; curMove->child; curMove=curMove->child) {}
+
+        /* go back in time */
+        for (; curMove; curMove=curMove->parent) {
+            curVar = curMove->next;
+            while (curVar) {
+                lvl = 0;
+                for (i=curVar; i; i=i->child) {
+                    for (j=i; j; j=j->prevVar) {
+                        if (lvl <= j->draw_lvl+1) 
+                            lvl = j->draw_lvl+1;
+                    }
+                    for (j=i; j; j=j->nextVar) {
+                        if (lvl <= j->draw_lvl+1) 
+                            lvl = j->draw_lvl+1;
+                    }
+
+                    i->draw_lvl = lvl;
+                }
+                    
+                curVar = curVar->next;
+            }
+        }
+
     }
 
     return root;
