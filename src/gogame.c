@@ -673,7 +673,7 @@ void gogame_move_to_prevEvt()
     gogame_move_back_update(0);
 
     /* move backward until beginning, variation, or comment is reached */
-    while (curNode->parent && curNode->next == NULL && !sgfGetCharProperty(curNode, "C ", &msg)) {
+    while (curNode->parent && curNode->next == NULL && curNode->parent->child->next == NULL && !sgfGetCharProperty(curNode, "C ", &msg)) {
         gogame_move_back_update(0);
     }
 
