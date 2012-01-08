@@ -35,7 +35,7 @@ typedef enum { /* WARNING: when changing the element number, consider the bit
                 * field length in GoBoardElement */
     MARKER_EMPTY,                                   /* no marker */
     MARKER_KO,                                      /* ko marker */
-    MARKER_SQUARE, MARKER_TRIANGLE, MARKER_CIRC     /* shape marker */
+    MARKER_SQUARE, MARKER_CIRC, MARKER_TRIANGLE     /* shape marker */
 } MarkerType;
 const char markerTypeString[5][2] = { " ", /* empty marker, not used */
                                       "M",
