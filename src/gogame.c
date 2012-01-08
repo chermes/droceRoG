@@ -39,6 +39,11 @@ typedef struct {
     ifont *font_ttf;
     int info_y; /* beginning of comment and variation window */
     int comment_width; /* width of comment window */
+    int varFontSize;
+    int varFontSep;
+    ifont *varWin_ttf;
+    int varwin_w;
+    int varwin_h;
 } DrawProperties;
 
 /******************************************************************************/
@@ -51,7 +56,7 @@ static int comment_update = 0;
 
 static GameInfo gameInfo;
 
-static DrawProperties drawProperties;
+static DrawProperties drawProps;
 
 static char *str_unknown = "unknown";
 
@@ -104,7 +109,7 @@ int gogame_new_from_file(const char *filename)
     readGameInfo();
     initDrawProperties();
 
-    board_new(gameInfo.boardSize, drawProperties.fontSize * 2 + drawProperties.fontSpace * 3);
+    board_new(gameInfo.boardSize, drawProps.fontSize * 2 + drawProps.fontSpace * 3);
 
     apply_sgf_cmds_to_board();
     /* test_readSGF(); */
@@ -139,9 +144,16 @@ void gogame_cleanup()
         gameInfo.ruleset    = NULL;
 
         /* cleanup draw properties */
-        drawProperties.fontSize = 12;
-        CloseFont(drawProperties.font_ttf);
-        drawProperties.font_ttf = NULL;
+        drawProps.fontSize = 12;
+        CloseFont(drawProps.font_ttf);
+        drawProps.font_ttf = NULL;
+
+        drawProps.varFontSize = 12;
+        drawProps.varFontSep = 0;
+        drawProps.varwin_h = 0;
+        drawProps.varwin_w = 0;
+        CloseFont(drawProps.varWin_ttf);
+        drawProps.varWin_ttf = NULL;
 
         /* cleanup go board */
         board_cleanup();
@@ -150,12 +162,22 @@ void gogame_cleanup()
 
 void initDrawProperties()
 {/*{{{*/
-    drawProperties.fontSize  = (int) ((double)ScreenWidth() / 600.0 * 12.0);
-    drawProperties.fontSpace = (int) ((double)ScreenWidth() / 600.0 * 4.0);
-    drawProperties.font_ttf = OpenFont("DejaVuSerif", drawProperties.fontSize, 1);
-    drawProperties.info_y = drawProperties.fontSize * 2 + drawProperties.fontSpace * 2
+    drawProps.fontSize  = (int) ((double)ScreenWidth() / 600.0 * 12.0);
+    drawProps.fontSpace = (int) ((double)ScreenWidth() / 600.0 * 4.0);
+    drawProps.font_ttf = OpenFont("DejaVuSerif", drawProps.fontSize, 1);
+
+    /* variation window */
+    drawProps.varwin_w = 5;
+    drawProps.varwin_h = 6;
+
+    drawProps.varFontSize  = (int) ((double)ScreenWidth() / 600.0 * 20.0);
+    drawProps.varFontSep = drawProps.varFontSize / 4;
+    drawProps.varWin_ttf = OpenFont("drocerog", drawProps.varFontSize, 1);
+
+    /* comment window */
+    drawProps.info_y = drawProps.fontSize * 2 + drawProps.fontSpace * 2
                             + ScreenWidth();
-    drawProperties.comment_width = (int) ((double)ScreenWidth() / 3.0 * 2.0);
+    drawProps.comment_width = ScreenWidth() - drawProps.varwin_w * 2 * drawProps.varFontSize + drawProps.varFontSize ;
 }/*}}}*/
 
 void test_readSGF()
@@ -197,6 +219,95 @@ void test_readSGF()
     }
 }/*}}}*/
 
+void draw_variation(int bPartialUpdate)
+{/*{{{*/
+    int i, lvl, x, y, x_parent, y_parent;
+    SGFNode *nd = NULL;
+    SGFNode *ndVar = NULL;
+    SGFNode *ndBegin = NULL;
+    char *tmp;
+
+    if (!gameTree)
+        return;
+    if (!curNode)
+        return;
+
+    if (bPartialUpdate) {
+        FillArea(drawProps.comment_width, drawProps.info_y,
+                 ScreenWidth() - drawProps.comment_width,
+                 ScreenHeight() - drawProps.info_y,
+                 WHITE);
+    }
+
+    for (ndBegin=curNode; ndBegin->prevVar; ndBegin=ndBegin->prevVar) {};
+
+    i = 0;
+    for (nd=ndBegin; nd; nd=nd->child) {
+        for (ndVar=nd; ndVar; ndVar=ndVar->nextVar) {
+            lvl = ndVar->draw_lvl;
+            x = drawProps.comment_width + 2 * i * drawProps.varFontSize;
+            y = drawProps.info_y + lvl * (drawProps.varFontSize + drawProps.varFontSep);
+
+            if (lvl < drawProps.varwin_h) {
+                /* draw "parent" line */
+                if (ndVar->parent && i > 0) {
+                    x_parent = drawProps.comment_width + 2 * (i-1) * drawProps.varFontSize;
+                    y_parent = drawProps.info_y + ndVar->parent->draw_lvl * (drawProps.varFontSize + drawProps.varFontSep);
+
+                    DrawLine(x, y + drawProps.varFontSize / 2,
+                             x_parent + drawProps.varFontSize, y_parent + drawProps.varFontSize / 2, 
+                             DGRAY);
+                }
+
+                if (is_move_node(ndVar)) {
+                    /* set current position color */
+                    if (ndVar == curNode)
+                        SetFont(drawProps.varWin_ttf, BLACK);
+                    else
+                        SetFont(drawProps.varWin_ttf, LGRAY);
+
+                    /* draw stone */
+                    if (sgfGetCharProperty(ndVar, "B ", &tmp)) {
+                        DrawString(x, y, "K");
+                        SetFont(drawProps.varWin_ttf, WHITE);
+                    } else if (sgfGetCharProperty(ndVar, "W ", &tmp)) {
+                        DrawString(x, y, "L");
+                        SetFont(drawProps.varWin_ttf, (ndVar == curNode) ? BLACK : LGRAY);
+                    }
+
+                    /* indicate comment if exists */
+                    if (sgfGetCharProperty(ndVar, "C ", &tmp))
+                        DrawString(x, y, "O");
+                } else {
+                    /* set current position color */
+                    if (ndVar == curNode)
+                        SetFont(drawProps.varWin_ttf, BLACK);
+                    else
+                        SetFont(drawProps.varWin_ttf, LGRAY);
+
+                    /* draw triangle */
+                    SetFont(drawProps.varWin_ttf, BLACK);
+                    DrawString(x, y, "O");
+
+                }
+
+            }
+
+        }
+
+        i += 1;
+        if (i > drawProps.varwin_w)
+            break;
+    }
+
+    if (bPartialUpdate) {
+        PartialUpdate(drawProps.comment_width, drawProps.info_y, /* x, y */
+                      ScreenWidth() - drawProps.comment_width,        /* w */
+                      ScreenHeight() - drawProps.info_y);             /* h */
+    }
+
+}/*}}}*/
+
 void gogame_draw_fullrepaint()
 {/*{{{*/
     char msg[1024];
@@ -206,29 +317,33 @@ void gogame_draw_fullrepaint()
 
     if (gameTree != NULL) {
         /* draw title */
-        SetFont(drawProperties.font_ttf, BLACK);
+        SetFont(drawProps.font_ttf, BLACK);
         snprintf( msg, sizeof(msg),
             "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
             gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank, 
             gameInfo.date, gameInfo.result);
-        DrawString(2, drawProperties.fontSpace, msg);
+        DrawString(2, drawProps.fontSpace, msg);
         snprintf( msg, sizeof(msg),
             "Time: %d min (%s), Komi: %s, Handicap: %d, Ruleset: %s",
             gameInfo.time / 60, gameInfo.overtime,
             gameInfo.komi, gameInfo.handicap, gameInfo.ruleset);
-        DrawString(2, drawProperties.fontSpace*2+drawProperties.fontSize, msg);
+        DrawString(2, drawProps.fontSpace*2+drawProps.fontSize, msg);
 
         /* draw comment window */
         if (comment_str != NULL) {
-            SetFont(drawProperties.font_ttf, BLACK);
-            DrawTextRect( 5, drawProperties.info_y,
-                          drawProperties.comment_width, ScreenHeight() - drawProperties.info_y,
+            SetFont(drawProps.font_ttf, BLACK);
+            DrawTextRect( 5, drawProps.info_y,
+                          drawProps.comment_width - 5 - 5, ScreenHeight() - drawProps.info_y,
                           comment_str,
                           ALIGN_LEFT | VALIGN_TOP );
             comment_update = 0;
-            // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProperties.info_y,
-                    // drawProperties.comment_width, ScreenHeight() - drawProperties.info_y);
+            // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProps.info_y,
+                    // drawProps.comment_width, ScreenHeight() - drawProps.info_y);
         }
+
+        /* draw variation window */
+        draw_variation(0);
+
     } else {
         default_ttf = OpenFont("DejaVuSerif", 12, 1);
         SetFont(default_ttf, BLACK);
@@ -248,27 +363,31 @@ void gogame_draw_fullrepaint()
 
 void gogame_draw_update()
 {/*{{{*/
-    if (gameTree != NULL)
-        board_draw_update(1);
+    if (!gameTree)
+        return;
+
+    board_draw_update(1);
 
     if (comment_update) {
-        FillArea(5, drawProperties.info_y,
-                 drawProperties.comment_width, ScreenHeight() - drawProperties.info_y,
+        FillArea(5, drawProps.info_y,
+                 drawProps.comment_width - 5, ScreenHeight() - drawProps.info_y,
                  WHITE);
         if (comment_str != NULL) {
-            SetFont(drawProperties.font_ttf, BLACK);
-            DrawTextRect( 5, drawProperties.info_y,
-                          drawProperties.comment_width, ScreenHeight() - drawProperties.info_y,
+            SetFont(drawProps.font_ttf, BLACK);
+            DrawTextRect( 5, drawProps.info_y,
+                          drawProps.comment_width - 5 - 5, ScreenHeight() - drawProps.info_y,
                           comment_str,
                           ALIGN_LEFT | VALIGN_TOP );
-            // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProperties.info_y,
-                    // drawProperties.comment_width, ScreenHeight() - drawProperties.info_y);
+            // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProps.info_y,
+                    // drawProps.comment_width, ScreenHeight() - drawProps.info_y);
         } 
 
-        PartialUpdate(5, drawProperties.info_y,
-                      drawProperties.comment_width, ScreenHeight() - drawProperties.info_y);
+        PartialUpdate(5, drawProps.info_y,
+                      drawProps.comment_width - 5, ScreenHeight() - drawProps.info_y);
         comment_update = 0;
     }
+
+    draw_variation(1);
 }/*}}}*/
 
 void updateCommentStr()
