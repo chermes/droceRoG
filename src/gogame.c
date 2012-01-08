@@ -584,24 +584,62 @@ void undo_variation(SGFNode *srcNode, SGFNode *targetNode)
 
 void gogame_moveVar_down()
 {/*{{{*/
+    SGFNode *ndCur = NULL;
+    SGFNode *ndNextVar = NULL;
+    int lvl;
+
     if (gameTree == NULL)
         return;
-    if (curNode->nextVar == NULL)
+
+    /* go to beginning of variations */
+    ndCur = curNode;
+    while (ndCur->prevVar)
+        ndCur = ndCur->prevVar;
+
+    /* determine node with higher lvl value next to current */
+    lvl = 20000;
+    for (; ndCur; ndCur=ndCur->nextVar) {
+        if (ndCur->draw_lvl > curNode->draw_lvl && ndCur->draw_lvl < lvl) {
+            lvl = ndCur->draw_lvl;
+            ndNextVar = ndCur;
+        }
+    }
+
+    if (ndNextVar == NULL)
         return;
 
-    undo_variation(curNode, curNode->nextVar);
+    undo_variation(curNode, ndNextVar);
 
     updateCommentStr();
 }/*}}}*/
 
 void gogame_moveVar_up()
 {/*{{{*/
+    SGFNode *ndCur = NULL;
+    SGFNode *ndPrevVar = NULL;
+    int lvl;
+
     if (gameTree == NULL)
         return;
-    if (curNode->prevVar == NULL)
+
+    /* go to beginning of variations */
+    ndCur = curNode;
+    while (ndCur->prevVar)
+        ndCur = ndCur->prevVar;
+
+    /* determine node with lower lvl value next to current */
+    lvl = -20000;
+    for (; ndCur; ndCur=ndCur->nextVar) {
+        if (ndCur->draw_lvl < curNode->draw_lvl && ndCur->draw_lvl > lvl) {
+            lvl = ndCur->draw_lvl;
+            ndPrevVar = ndCur;
+        }
+    }
+
+    if (ndPrevVar == NULL)
         return;
 
-    undo_variation(curNode, curNode->prevVar);
+    undo_variation(curNode, ndPrevVar);
 
     updateCommentStr();
 }/*}}}*/
