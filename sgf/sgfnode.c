@@ -1319,6 +1319,16 @@ readsgffile(const char *filename)
                     i->draw_lvl = lvl;
                 }
                     
+                /* go straight to maximum level without "stairs" */
+                for (i=curVar; i; i=i->child) {
+                    /* check if maximum level is reached */
+                    if (i->draw_lvl == lvl)
+                        break;
+
+                    if (i->draw_lvl != i->parent->draw_lvl + 1)
+                        i->draw_lvl = i->parent->draw_lvl + 1;
+                }
+
                 curVar = curVar->next;
             }
         }
