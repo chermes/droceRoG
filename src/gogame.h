@@ -25,6 +25,10 @@ void gogame_move_back();
 void gogame_moveVar_down();
 void gogame_moveVar_up();
 
+/* move to next and previous event, e.g. a comment or a variation */
+void gogame_move_to_nextEvt();
+void gogame_move_to_prevEvt();
+
 #ifdef __cplusplus
 }
 #endif

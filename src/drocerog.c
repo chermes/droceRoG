@@ -46,10 +46,10 @@ int main_handler(int type, int par1, int par2)
         // board_print();
         // board_test_placeStones();
 
-        // retVal = gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
+        retVal = gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
         // retVal = gogame_new_from_file("/mnt/ext1/applications/8457-Dieter-bakhtiari-joeseki.sgf");
 
-        retVal = gogame_new_from_file("testSGF.sgf");
+        // retVal = gogame_new_from_file("testSGF.sgf");
         // retVal = gogame_new_from_file("/mnt/ext1/applications/testSGF.sgf");
 
         if (retVal > 0) {
@@ -78,11 +78,13 @@ int main_handler(int type, int par1, int par2)
                 break;
 
             case KEY_LEFT:
-                msg("KEY_LEFT");
+                gogame_move_to_prevEvt();
+                gogame_draw_update();
                 break;
 
             case KEY_RIGHT:
-                msg("KEY_RIGHT");
+                gogame_move_to_nextEvt();
+                gogame_draw_update();
                 break;
 
             case KEY_UP:

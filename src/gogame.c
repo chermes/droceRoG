@@ -413,7 +413,7 @@ void updateCommentStr()
         comment_str = msg;
         comment_update = 1;
 
-        /* remove double '\n' occurrences */
+        /* replace double '\n' occurrences by spaces */
         for (ptr1 = strstr(msg, "\n"); ptr1; ptr1 = strstr(ptr1+1, "\n")) {
             ptr2 = ptr1 + 1;
             while (*ptr2 == ' ')
@@ -461,11 +461,8 @@ void readGameInfo()
     GET_CHAR_PROP("RU", gameInfo.ruleset);
 }/*}}}*/
 
-void gogame_move_forward()
+void gogame_move_forward_update(int bUpdate)
 {/*{{{*/
-    // int varNum;
-    // SGFNode *node;
-
     if (gameTree == NULL)
         return;
 
@@ -476,19 +473,12 @@ void gogame_move_forward()
 
     apply_sgf_cmds_to_board();
 
-    updateCommentStr();
-
-    // /* DEBUG: check if variation exists */
-    // varNum = 0;
-    // fprintf(stderr, "Current node with var: ");
-    // for (node=curNode; node; node=node->nextVar)
-        // fprintf(stderr, " %p,", node);
-    // fprintf(stderr, "\n");
-    // for (node=curNode->next; node; node=node->next) {
-        // varNum += 1;
-        // fprintf(stderr, "\tVariation %d: parent=%p, child=%p, next=%p\n", 
-                // varNum, node->parent, node->child, node->next);
-    // }
+    if (bUpdate)
+        updateCommentStr();
+}/*}}}*/
+void gogame_move_forward()
+{/*{{{*/
+    gogame_move_forward_update(1);
 }/*}}}*/
 
 void apply_sgf_cmds_to_board()
@@ -523,7 +513,7 @@ void apply_sgf_cmds_to_board()
     }
 }/*}}}*/
 
-void gogame_move_back()
+void gogame_move_back_update(int bUpdate)
 {/*{{{*/
     if (gameTree == NULL)
         return;
@@ -531,7 +521,12 @@ void gogame_move_back()
     if (board_undo())
         curNode = curNode->parent;
 
-    updateCommentStr();
+    if (bUpdate)
+        updateCommentStr();
+}/*}}}*/
+void gogame_move_back()
+{/*{{{*/
+    gogame_move_back_update(1);
 }/*}}}*/
 
 void undo_variation(SGFNode *srcNode, SGFNode *targetNode)
@@ -640,6 +635,44 @@ void gogame_moveVar_up()
 
     undo_variation(curNode, ndPrevVar);
 
+    updateCommentStr();
+}/*}}}*/
+
+void gogame_move_to_nextEvt()
+{/*{{{*/
+    char *msg;
+
+    if (gameTree == NULL)
+        return;
+
+    /* inital step forward */
+    gogame_move_forward_update(0);
+
+    /* move forward until end, variation, or comment is reached */
+    while (curNode->child && curNode->next == NULL && !sgfGetCharProperty(curNode, "C ", &msg)) {
+        gogame_move_forward_update(0);
+    }
+
+    /* update comment */
+    updateCommentStr();
+}/*}}}*/
+
+void gogame_move_to_prevEvt()
+{/*{{{*/
+    char *msg;
+
+    if (gameTree == NULL)
+        return;
+
+    /* inital step backward */
+    gogame_move_back_update(0);
+
+    /* move backward until beginning, variation, or comment is reached */
+    while (curNode->parent && curNode->next == NULL && !sgfGetCharProperty(curNode, "C ", &msg)) {
+        gogame_move_back_update(0);
+    }
+
+    /* update comment */
     updateCommentStr();
 }/*}}}*/
 
