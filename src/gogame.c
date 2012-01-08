@@ -239,7 +239,12 @@ void draw_variation(int bPartialUpdate)
                  WHITE);
     }
 
+    /* find top variation */
     for (ndBegin=curNode; ndBegin->prevVar; ndBegin=ndBegin->prevVar) {};
+
+    /* begin variation overview with the previous move */
+    if (ndBegin->parent)
+        ndBegin = ndBegin->parent;
 
     i = 0;
     for (nd=ndBegin; nd; nd=nd->child) {
