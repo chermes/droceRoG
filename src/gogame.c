@@ -87,7 +87,7 @@ void debug_msg(char *s)
     FillArea(350, 770, 250, 20, WHITE);
     SetFont(times12, BLACK);
     DrawString(350, 770, s);
-    PartialUpdate(350, 770, 250, 20);
+    PartialUpdateBW(350, 770, 250, 20);
     CloseFont(times12);
 }/*}}}*/
 
@@ -256,15 +256,12 @@ void draw_variation(int bPartialUpdate)
 
                     DrawLine(x, y + drawProps.varFontSize / 2,
                              x_parent + drawProps.varFontSize, y_parent + drawProps.varFontSize / 2, 
-                             DGRAY);
+                             BLACK);
                 }
 
                 if (is_move_node(ndVar)) {
                     /* set current position color */
-                    if (ndVar == curNode)
-                        SetFont(drawProps.varWin_ttf, BLACK);
-                    else
-                        SetFont(drawProps.varWin_ttf, LGRAY);
+                    SetFont(drawProps.varWin_ttf, BLACK);
 
                     /* draw stone */
                     if (sgfGetCharProperty(ndVar, "B ", &tmp)) {
@@ -272,27 +269,29 @@ void draw_variation(int bPartialUpdate)
                         SetFont(drawProps.varWin_ttf, WHITE);
                     } else if (sgfGetCharProperty(ndVar, "W ", &tmp)) {
                         DrawString(x, y, "L");
-                        SetFont(drawProps.varWin_ttf, (ndVar == curNode) ? BLACK : LGRAY);
+                        SetFont(drawProps.varWin_ttf, BLACK);
                     }
 
                     /* indicate comment if exists */
                     if (sgfGetCharProperty(ndVar, "C ", &tmp))
                         DrawString(x, y, "O");
-                } else {
-                    /* set current position color */
-                    if (ndVar == curNode)
-                        SetFont(drawProps.varWin_ttf, BLACK);
-                    else
-                        SetFont(drawProps.varWin_ttf, LGRAY);
+                } else { /* no move: draw just a placeholder */
+                    /* set position color */
+                    SetFont(drawProps.varWin_ttf, BLACK);
 
                     /* draw triangle */
                     SetFont(drawProps.varWin_ttf, BLACK);
                     DrawString(x, y, "O");
-
                 }
 
+                /* indicate current position */
+                if (ndVar == curNode) {
+                    DrawLine(x, y, x + drawProps.varFontSize, y, BLACK);
+                    DrawLine(x + drawProps.varFontSize, y, x + drawProps.varFontSize, y + drawProps.varFontSize, BLACK);
+                    DrawLine(x, y + drawProps.varFontSize, x + drawProps.varFontSize, y + drawProps.varFontSize, BLACK);
+                    DrawLine(x, y, x, y + drawProps.varFontSize, BLACK);
+                }
             }
-
         }
 
         i += 1;
@@ -301,9 +300,9 @@ void draw_variation(int bPartialUpdate)
     }
 
     if (bPartialUpdate) {
-        PartialUpdate(drawProps.comment_width, drawProps.info_y, /* x, y */
-                      ScreenWidth() - drawProps.comment_width,        /* w */
-                      ScreenHeight() - drawProps.info_y);             /* h */
+        PartialUpdateBW(drawProps.comment_width, drawProps.info_y, /* x, y */
+                        ScreenWidth() - drawProps.comment_width,   /* w */
+                        ScreenHeight() - drawProps.info_y);        /* h */
     }
 
 }/*}}}*/

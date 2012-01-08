@@ -625,7 +625,7 @@ void board_draw_update(int bPartialUpdate)
         // fprintf(stderr, "r_min = %d, r_max = %d, c_min = %d, c_max = %d\n", r_min, r_max, c_min, c_max);
         x = curBoard->draw_offset_x + c_min * curBoard->draw_elemSize;
         y = curBoard->draw_offset_y + r_min * curBoard->draw_elemSize;
-        PartialUpdate(x, y, curBoard->draw_elemSize * (c_max - c_min + 1), curBoard->draw_elemSize * (r_max - r_min + 1));
+        PartialUpdateBW(x, y, curBoard->draw_elemSize * (c_max - c_min + 1), curBoard->draw_elemSize * (r_max - r_min + 1));
     }
 
 }/*}}}*/
