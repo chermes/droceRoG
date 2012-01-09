@@ -350,31 +350,31 @@ void gogame_draw_fullrepaint()
         draw_variation(0);
 
     } else {
-        curFontSz = 20;
-        linePts = ScreenWidth() / 600 * curFontSz; /* free line */
+        curFontSz = ScreenWidth() / 600 * 20;
+        linePts = curFontSz; /* free line */
 
         /* title */
-        default_ttf = OpenFont("DejaVuSerif", ScreenWidth() / 600 * curFontSz, 1);
+        default_ttf = OpenFont("DejaVuSerif", curFontSz, 1);
         SetFont(default_ttf, BLACK);
         DrawString(10, linePts, "droceRoG - Go Game Record Viewer");
-        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
+        linePts += curFontSz + curFontSz / 2;
         CloseFont(default_ttf);
 
-        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2; /* free line */
+        linePts += curFontSz + curFontSz / 2; /* free line */
 
         /* Author, version and short help */
-        curFontSz = 14;
-        default_ttf = OpenFont("DejaVuSerif", ScreenWidth() / 600 * curFontSz, 1);
+        curFontSz = ScreenWidth() / 600 * 14;
+        default_ttf = OpenFont("DejaVuSerif", curFontSz, 1);
         SetFont(default_ttf, BLACK);
         DrawString(10, linePts, "Author: Christoph Hermes (hermes<at>hausmilbe<dot>net)");
-        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
+        linePts += curFontSz + curFontSz / 2;
         DrawString(10, linePts, "Version: "DROCEROG_VERSION);
-        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
-        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2; /* free line */
+        linePts += curFontSz + curFontSz / 2;
+        linePts += curFontSz + curFontSz / 2; /* free line */
         DrawString(10, linePts, "Please open a file by pressing the (context) menu symbol on the right side.");
-        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
+        linePts += curFontSz + curFontSz / 2;
 
-        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2; /* free line */
+        linePts += curFontSz + curFontSz / 2; /* free line */
 
         /* Longer help */
         DrawTextRect(10, linePts,
