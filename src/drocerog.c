@@ -8,6 +8,7 @@
 #include "gogame.h"
 
 ifont *times12;
+char *init_filename = NULL;
 
 /* prototypes */
 int main_handler(int type, int par1, int par2);
@@ -37,14 +38,8 @@ int main_handler(int type, int par1, int par2)
             // i += 1;
         // }
 
-        gogame_new_from_file("8457-Dieter-bakhtiari-joeseki.sgf");
-        // gogame_new_from_file("");
-        // gogame_new_from_file("/mnt/ext1/applications/8457-Dieter-bakhtiari-joeseki.sgf");
+        gogame_new_from_file(init_filename);
 
-        // gogame_new_from_file("testSGF.sgf");
-        // gogame_new_from_file("/mnt/ext1/applications/testSGF.sgf");
-
-        // gogame_new_from_file("testSGF_problem.sgf");
         gogame_printGameInfo();
     }
 
@@ -99,10 +94,6 @@ int main_handler(int type, int par1, int par2)
                 // OpenMenu(menu1, cindex, 20, 20, menu1_handler);
                 msg("KEY_MENU");
                 break;
-
-            case KEY_DELETE:
-                msg("KEY_DELETE");
-                break;
         }
     }
 
@@ -113,8 +104,15 @@ int main_handler(int type, int par1, int par2)
     return 0;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    /* initialise file name */
+    if (argc == 2) {
+        init_filename = argv[1];
+    } else {
+        init_filename = "";
+    }
+
     InkViewMain(main_handler);
     return 0;
 }
