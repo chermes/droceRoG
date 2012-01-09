@@ -162,7 +162,7 @@ void gogame_cleanup()
 
 void initDrawProperties()
 {/*{{{*/
-    drawProps.fontSize  = (int) ((double)ScreenWidth() / 600.0 * 12.0);
+    drawProps.fontSize  = (int) ((double)ScreenWidth() / 600.0 * 14.0);
     drawProps.fontSpace = (int) ((double)ScreenWidth() / 600.0 * 4.0);
     drawProps.font_ttf = OpenFont("DejaVuSerif", drawProps.fontSize, 1);
 
@@ -316,6 +316,7 @@ void gogame_draw_fullrepaint()
 {/*{{{*/
     char msg[1024];
     ifont *default_ttf;
+    int curFontSz, linePts;
 
     ClearScreen();
 
@@ -349,11 +350,55 @@ void gogame_draw_fullrepaint()
         draw_variation(0);
 
     } else {
-        default_ttf = OpenFont("DejaVuSerif", 12, 1);
+        curFontSz = 20;
+        linePts = ScreenWidth() / 600 * curFontSz; /* free line */
+
+        /* title */
+        default_ttf = OpenFont("DejaVuSerif", ScreenWidth() / 600 * curFontSz, 1);
         SetFont(default_ttf, BLACK);
-        DrawString(5, 20, "droceRoG - Go Game Record Viewer");
-        DrawString(5, 40, "Author: Christoph Hermes (hermes<at>hausmilbe<dot>net)");
-        DrawString(5, 70, "Please open a file by pressing the Menu symbol on the right side.");
+        DrawString(10, linePts, "droceRoG - Go Game Record Viewer");
+        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
+        CloseFont(default_ttf);
+
+        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2; /* free line */
+
+        /* Author, version and short help */
+        curFontSz = 14;
+        default_ttf = OpenFont("DejaVuSerif", ScreenWidth() / 600 * curFontSz, 1);
+        SetFont(default_ttf, BLACK);
+        DrawString(10, linePts, "Author: Christoph Hermes (hermes<at>hausmilbe<dot>net)");
+        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
+        DrawString(10, linePts, "Version: "DROCEROG_VERSION);
+        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
+        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2; /* free line */
+        DrawString(10, linePts, "Please open a file by pressing the (context) menu symbol on the right side.");
+        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2;
+
+        linePts += ScreenWidth() / 600 * curFontSz + curFontSz / 2; /* free line */
+
+        /* Longer help */
+        DrawTextRect(10, linePts,
+                     ScreenWidth() - 2*10, ScreenHeight() - linePts,
+                     "This program reads a SGF file (Smart Go/Game Format) and displays the contents on the screen of your PocketBook reader. It is useful for studying a (commented) Go game but useless if you want to play against the computer. You will find more detailed information and the sources on \n\n      http://drocerog.hausmilbe.net\n\n\
+Send me a message if you have any suggestions, like to contribute, or just want to tell me how awesome this tool is. Have fun playing and studying Go!\n\
+\n\
+\n\
+Short key description:\n\
+\n\
+* Home - Does nothing.\n\
+* Menu - Opens context menu (file selection, go to move, etc.)\n\
+* Forward / Backward - One move forward / backward\n\
+* Forward / Backward (hold down) - Five moves forward / backward\n\
+* OK - Displays a comment on the full screen instead under the board\n\
+\n\
+\n\
+Navigation keys:\n\
+\n\
+* Left / Right - Move to previous / next variation or comment\n\
+* Up / Down - Switch between variations\n\
+* Return - Exit program",
+                     ALIGN_LEFT | VALIGN_TOP);
+
         CloseFont(default_ttf);
     }
 

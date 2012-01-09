@@ -7,6 +7,9 @@
 PROJECT (drocerog)
 CMAKE_MINIMUM_REQUIRED (VERSION 2.6.0)
 
+# set project version
+add_definitions(-DDROCEROG_VERSION="0.1")
+
 IF (NOT PLATFORM)
 	SET (PLATFORM FC)
 ENDIF (NOT PLATFORM)
