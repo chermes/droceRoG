@@ -4,8 +4,8 @@
  */
 
 #include "inkview.h"
-// #include "goboard.h"
 #include "gogame.h"
+#include "fileselector.h"
 
 ifont *times12;
 char *init_filename = NULL;
@@ -20,6 +20,13 @@ void msg(char *s)
   SetFont(times12, BLACK);
   DrawString(350, 770, s);
   PartialUpdate(350, 770, 250, 20);
+}
+
+void cb_update_sgf(char *filename)
+{
+    // fprintf(stderr, "callback called: %s\n", filename);
+    gogame_new_from_file(filename);
+    gogame_draw_fullrepaint();
 }
 
 int main_handler(int type, int par1, int par2) 
@@ -53,7 +60,7 @@ int main_handler(int type, int par1, int par2)
     if (type == EVT_KEYUP) {
         switch (par1) {
             case KEY_OK:
-                msg("KEY_OK");
+                fileselector_chooseFile(&cb_update_sgf);
                 break;
 
             case KEY_BACK:

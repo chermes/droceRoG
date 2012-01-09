@@ -115,6 +115,7 @@ SET (SRC_LIST
 	${CMAKE_SOURCE_DIR}/src/drocerog.c
 	${CMAKE_SOURCE_DIR}/src/goboard.c
 	${CMAKE_SOURCE_DIR}/src/gogame.c
+	${CMAKE_SOURCE_DIR}/src/fileselector.c
     )	
 
 ADD_EXECUTABLE (drocerog 
