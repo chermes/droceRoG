@@ -167,7 +167,7 @@ void initDrawProperties()
     drawProps.font_ttf = OpenFont("DejaVuSerif", drawProps.fontSize, 1);
 
     /* variation window */
-    drawProps.varwin_w = 5;
+    drawProps.varwin_w = 4;
     drawProps.varwin_h = 6;
 
     drawProps.varFontSize  = (int) ((double)ScreenWidth() / 600.0 * 20.0);
