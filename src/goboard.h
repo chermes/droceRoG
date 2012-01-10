@@ -37,6 +37,10 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove);
  */
 int board_undo();
 
+/* Get number of captured stones, both for black and white 
+ */
+void board_get_captured(int *black, int *white);
+
 /******************************************************************************/
 
 #ifdef __cplusplus

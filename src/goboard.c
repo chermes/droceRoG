@@ -53,6 +53,8 @@ typedef struct
 {
     int size;               /* size x size */
     GoBoardElement *board;  /* board[col * size + row] */
+    int num_caps_b;         /* captured stones, black and white */
+    int num_caps_w;
     int draw_elemSize;      /* size in points for each field element */
     ifont *draw_font;       /* ttf handler for the drocerog ttf */
     int draw_offset_x;      /* move the board the specified points right */
@@ -160,6 +162,10 @@ void board_new(int size, int offset_y)
     curBoard->draw_offset_x = (int) ((ScreenWidth() - curBoard->draw_elemSize * size) / 2);
     curBoard->draw_offset_y = offset_y;
 
+    /* init captured stones */
+    curBoard->num_caps_b = 0;
+    curBoard->num_caps_w = 0;
+
     /* init history */
     history_curNode = hist_newElem(NULL);
 
@@ -264,6 +270,15 @@ int board_undo()
     for (curLstElem=oldHist->stones_removed; curLstElem; curLstElem=curLstElem->next) {
         curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].field_type = curLstElem->data;
         curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].draw_update = 1;
+        /* notice undo removal in number of captured stones */
+        switch (curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].field_type) {
+            case FIELD_BLACK:
+                    curBoard->num_caps_b -= 1;
+                break;
+            case FIELD_WHITE:
+                    curBoard->num_caps_w -= 1;
+                break;
+        }
     }
     /* undo stone placement */
     for (curLstElem=oldHist->stones_placed; curLstElem; curLstElem=curLstElem->next) {
@@ -464,6 +479,17 @@ void clearDeadGroups(int cur_r, int cur_c)
                     } else {
                         history_curNode->stones_removed = list_newElem(history_curNode->stones_removed, r, c, curBoard->board[c * sz + r].field_type);
                     }
+
+                    /* notice removal in numbers of captured stones */
+                    switch (curBoard->board[c * sz + r].field_type) {
+                        case FIELD_BLACK:
+                            curBoard->num_caps_b += 1;
+                            break;
+                        case FIELD_WHITE:
+                            curBoard->num_caps_w += 1;
+                            break;
+                    }
+
                     curBoard->board[c * sz + r].field_type = FIELD_EMPTY;
                     curBoard->board[c * sz + r].draw_update = 1;
                 }
@@ -628,5 +654,14 @@ void board_draw_update(int bPartialUpdate)
         PartialUpdateBW(x, y, curBoard->draw_elemSize * (c_max - c_min + 1), curBoard->draw_elemSize * (r_max - r_min + 1));
     }
 
+}/*}}}*/
+
+void board_get_captured(int *black, int *white)
+{/*{{{*/
+    assert(black);
+    assert(white);
+
+    *black = curBoard->num_caps_w;
+    *white = curBoard->num_caps_b;
 }/*}}}*/
 

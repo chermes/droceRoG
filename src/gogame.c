@@ -233,6 +233,7 @@ void draw_variation(int bPartialUpdate)
     SGFNode *ndBegin = NULL;
     char *tmp;
     char gInfo[256];
+    int caps_b, caps_w;
 
     if (!gameTree)
         return;
@@ -249,7 +250,8 @@ void draw_variation(int bPartialUpdate)
 
     /* print game info (move number, captured stones) */
     SetFont(drawProps.font_ttf, BLACK);
-    snprintf(gInfo, sizeof(gInfo), "Move %d\nCap.: B[%d] W[%d]", curNode->move_num, 23, 32);
+    board_get_captured(&caps_b, &caps_w);
+    snprintf(gInfo, sizeof(gInfo), "Move %d\nCap.: B[%d] W[%d]", curNode->move_num, caps_b, caps_w);
     DrawTextRect(drawProps.comment_width + 2 * drawProps.border_sep,                 /* x */
                  drawProps.info_y,                                                   /* y */
                  ScreenWidth() - drawProps.comment_width + 2 * drawProps.border_sep, /* w */
