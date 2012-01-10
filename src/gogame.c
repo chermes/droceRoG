@@ -486,7 +486,7 @@ void gogame_draw_update()
 void updateCommentStr()
 {/*{{{*/
     char *msg; 
-    char *ptr1, *ptr2;
+    // char *ptr1, *ptr2;
 
     assert(gameTree != NULL);
     assert(curNode != NULL);
@@ -507,14 +507,14 @@ void updateCommentStr()
         comment_str = msg;
         comment_update = 1;
 
-        /* replace double '\n' occurrences by spaces */
-        for (ptr1 = strstr(msg, "\n"); ptr1; ptr1 = strstr(ptr1+1, "\n")) {
-            ptr2 = ptr1 + 1;
-            while (*ptr2 == ' ')
-                ptr2 += 1;
-            if (*ptr2 == '\n')
-                *ptr1 = ' ';
-        }
+        // /* replace double '\n' occurrences by spaces */
+        // for (ptr1 = strstr(msg, "\n"); ptr1; ptr1 = strstr(ptr1+1, "\n")) {
+            // ptr2 = ptr1 + 1;
+            // while (*ptr2 == ' ')
+                // ptr2 += 1;
+            // if (*ptr2 == '\n')
+                // *ptr1 = ' ';
+        // }
     }
 
 }/*}}}*/
