@@ -412,7 +412,6 @@ Short key description:\n\
 * Home - Does nothing.\n\
 * Menu - Opens context menu (file selection, go to move, etc.)\n\
 * Forward / Backward - One move forward / backward\n\
-* Forward / Backward (hold down) - Five moves forward / backward\n\
 * OK - Displays a comment on the full screen instead under the board\n\
 \n\
 \n\
