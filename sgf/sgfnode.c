@@ -115,6 +115,7 @@ sgfNewNode()
   newnode->prevVar = NULL;
   newnode->nextVar = NULL;
   newnode->draw_lvl = -1;
+  newnode->move_num = 0;
   return newnode;
 }
 
@@ -1333,6 +1334,21 @@ readsgffile(const char *filename)
             }
         }
 
+    }
+
+    /* determine move number */
+    {
+        SGFNode *curMove = NULL;
+        SGFNode *curVar = NULL;
+        int move = 0;
+
+        for (curMove=root; curMove; curMove=curMove->child) {
+            if (is_move_node(curMove))
+                move += 1;
+
+            for (curVar=curMove; curVar; curVar=curVar->nextVar)
+                curVar->move_num = move;
+        }
     }
 
     return root;

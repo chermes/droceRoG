@@ -232,6 +232,7 @@ void draw_variation(int bPartialUpdate)
     SGFNode *ndVar = NULL;
     SGFNode *ndBegin = NULL;
     char *tmp;
+    char gInfo[256];
 
     if (!gameTree)
         return;
@@ -246,6 +247,15 @@ void draw_variation(int bPartialUpdate)
                  WHITE);
     }
 
+    /* print game info (move number, captured stones) */
+    SetFont(drawProps.font_ttf, BLACK);
+    snprintf(gInfo, sizeof(gInfo), "Move %d\nCap.: B[%d] W[%d]", curNode->move_num, 23, 32);
+    DrawTextRect(drawProps.comment_width + 2 * drawProps.border_sep,                 /* x */
+                 drawProps.info_y,                                                   /* y */
+                 ScreenWidth() - drawProps.comment_width + 2 * drawProps.border_sep, /* w */
+                 drawProps.fontSize * 3,
+                 gInfo, ALIGN_LEFT | VALIGN_TOP );
+
     /* find top variation */
     for (ndBegin=curNode; ndBegin->prevVar; ndBegin=ndBegin->prevVar) {};
 
@@ -258,13 +268,15 @@ void draw_variation(int bPartialUpdate)
         for (ndVar=nd; ndVar; ndVar=ndVar->nextVar) {
             lvl = ndVar->draw_lvl;
             x = drawProps.comment_width + 2 * drawProps.border_sep + 2 * i * drawProps.varFontSize;
-            y = drawProps.info_y + lvl * (drawProps.varFontSize + drawProps.varFontSep);
+            y = ScreenHeight() - drawProps.varFontSize - drawProps.varFontSize * drawProps.varFontSep 
+                + lvl * (drawProps.varFontSize + drawProps.varFontSep);
 
             if (lvl < drawProps.varwin_h) {
                 /* draw "parent" line */
                 if (ndVar->parent && i > 0) {
                     x_parent = drawProps.comment_width + 2 * drawProps.border_sep + 2 * (i-1) * drawProps.varFontSize;
-                    y_parent = drawProps.info_y + ndVar->parent->draw_lvl * (drawProps.varFontSize + drawProps.varFontSep);
+                    y_parent = ScreenHeight() - drawProps.varFontSize - drawProps.varFontSize * drawProps.varFontSep 
+                               + ndVar->parent->draw_lvl * (drawProps.varFontSize + drawProps.varFontSep);
 
                     DrawLine(x, y + drawProps.varFontSize / 2,
                              x_parent + drawProps.varFontSize, y_parent + drawProps.varFontSize / 2, 
