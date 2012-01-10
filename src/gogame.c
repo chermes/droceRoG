@@ -326,6 +326,8 @@ void gogame_draw_fullrepaint()
     ifont *default_ttf;
     int curFontSz, linePts;
 
+    // fprintf(stderr, "gogame.c: gogame_draw_fullrepaint() called\n");
+
     ClearScreen();
 
     if (gameTree != NULL) {
@@ -420,6 +422,7 @@ Navigation keys:\n\
 
 void gogame_draw_update()
 {/*{{{*/
+    // fprintf(stderr, "gogame.c: gogame_draw_update called\n");
     if (!gameTree)
         return;
 

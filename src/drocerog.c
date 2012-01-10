@@ -24,7 +24,8 @@ void msg(char *s)
 
 void cb_update_sgf(char *filename)
 {
-    // fprintf(stderr, "callback called: %s\n", filename);
+    // fprintf(stderr, "drocerog.c: callback called: %s\n", filename);
+
     gogame_new_from_file(filename);
     gogame_draw_fullrepaint();
 }

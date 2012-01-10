@@ -24,7 +24,7 @@ typedef struct TOC_Elem_s {
 
 void (*cb_update_fun)(char *filename) = NULL;
 
-TOC_Elem *lst;
+static TOC_Elem *lst;
 
 static tocentry *contents = NULL;
 
@@ -41,7 +41,7 @@ void entry_selected(int page)
 {/*{{{*/
     TOC_Elem *cur;
 
-    // fprintf(stderr, "page %d selected.\n", page);
+    // fprintf(stderr, "fileselector.c: page %d selected.\n", page);
 
     /* find selected entry */
     cur = lst;

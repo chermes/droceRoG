@@ -1285,7 +1285,7 @@ readsgffile(const char *filename)
             }
         }
     }
-    fprintf(stderr, "END while(lst)\n");
+    // fprintf(stderr, "END while(lst)\n");
 
     /* droceRoG: determine draw level */
     {
