@@ -572,7 +572,7 @@ void board_draw_update(int bPartialUpdate)
             y = curBoard->draw_offset_y + r * curBoard->draw_elemSize;
 
             /* check if update necessary */
-            if (curBoard->board[i].draw_update) {
+            if (!bPartialUpdate || curBoard->board[i].draw_update) {
 
                 if (r_min > r) r_min = r;
                 if (r_max < r) r_max = r;
