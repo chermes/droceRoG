@@ -95,6 +95,7 @@ void debug_msg(char *s)
 int gogame_new_from_file(const char *filename)
 {/*{{{*/
     gogame_cleanup();
+    initDrawProperties();
 
     gameTree = (SGFTree *) malloc(sizeof(SGFTree));
     if (gameTree == NULL)
@@ -108,7 +109,6 @@ int gogame_new_from_file(const char *filename)
     curNode = gameTree->root;
 
     readGameInfo();
-    initDrawProperties();
 
     board_new(gameInfo.boardSize, drawProps.fontSize * 2 + drawProps.fontSpace * 3);
 
