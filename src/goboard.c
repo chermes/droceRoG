@@ -55,6 +55,8 @@ typedef struct
     GoBoardElement *board;  /* board[col * size + row] */
     int num_caps_b;         /* captured stones, black and white */
     int num_caps_w;
+    int cur_move_r;         /* current move, if val < 0, no current */
+    int cur_move_c;         /* move is set. */
     int draw_elemSize;      /* size in points for each field element */
     ifont *draw_font;       /* ttf handler for the drocerog ttf */
     int draw_offset_x;      /* move the board the specified points right */
@@ -75,6 +77,7 @@ typedef struct HistoryElem_s {
     ListElem *stones_placed;
     ListElem *stones_removed;
     ListElem *marker_set;
+    ListElem *curMove;      /* link to list element in stones_placed */
 } HistoryElem;
 
 /******************************************************************************/
@@ -166,6 +169,10 @@ void board_new(int size, int offset_y)
     curBoard->num_caps_b = 0;
     curBoard->num_caps_w = 0;
 
+    /* init current move */
+    curBoard->cur_move_r = -1;
+    curBoard->cur_move_c = -1;
+
     /* init history */
     history_curNode = hist_newElem(NULL);
 
@@ -180,6 +187,7 @@ HistoryElem *hist_newElem(HistoryElem *prevElem)
     newElem->stones_placed = NULL;
     newElem->stones_removed = NULL;
     newElem->marker_set = NULL;
+    newElem->curMove = NULL;
 
     return newElem;
 }/*}}}*/
@@ -204,6 +212,8 @@ ListElem *list_newElem(ListElem *prevElem, int r, int c, int data)
 
 void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
 {/*{{{*/
+    ListElem *elem;
+
     assert( curBoard != NULL );
     assert( r >= 0 );
     assert( c >= 0 );
@@ -221,14 +231,27 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
     }
     curBoard->board[c * curBoard->size + r].draw_update = 1;
 
+    /* update current move */
+    if (bIsMove) {
+        /* update old cur_move coordinates */
+        if (curBoard->cur_move_r > 0 && curBoard->cur_move_c > 0)
+            curBoard->board[curBoard->cur_move_c * curBoard->size + curBoard->cur_move_r].draw_update = 1;
+            
+        curBoard->cur_move_r = r;
+        curBoard->cur_move_c = c;
+        /* draw_update already set to 1 */
+    }
+
     /* update history */
     if (bIsMove) /* new move creates a new history element */
         history_curNode = hist_newElem(history_curNode);
-    if (history_curNode->stones_placed) {
-        list_newElem(history_curNode->stones_placed, r, c, curBoard->board[c * curBoard->size + r].field_type);
-    } else {
-        history_curNode->stones_placed = list_newElem(history_curNode->stones_placed, r, c, curBoard->board[c * curBoard->size + r].field_type);
+    elem = list_newElem(history_curNode->stones_placed, r, c, curBoard->board[c * curBoard->size + r].field_type);
+    /* if stones_placement list is empty, create a new one */
+    if (history_curNode->stones_placed == NULL) { 
+        history_curNode->stones_placed = elem;
     }
+    if (bIsMove)
+        history_curNode->curMove = elem;
 
     /* remove stones if necessary */
     if (bIsMove)
@@ -294,6 +317,17 @@ int board_undo()
         curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].marker_type = curLstElem->data;
         curBoard->board[curLstElem->c * curBoard->size + curLstElem->r].draw_update = 1;
     }
+    /* undo current move marker */
+    curBoard->board[curBoard->cur_move_c * curBoard->size + curBoard->cur_move_r].draw_update = 1;
+    if (history_curNode->curMove) {
+        curBoard->cur_move_r = history_curNode->curMove->r;
+        curBoard->cur_move_c = history_curNode->curMove->c;
+    } else {
+        curBoard->cur_move_r = -1;
+        curBoard->cur_move_c = -1;
+    }
+    curBoard->board[curBoard->cur_move_c * curBoard->size + curBoard->cur_move_r].draw_update = 1;
+
 
     /* unchain old history element and delete it */
     oldHist->prev = NULL;
@@ -608,6 +642,7 @@ void board_draw_update(int bPartialUpdate)
                 if (bPartialUpdate)
                     FillArea(x, y, curBoard->draw_elemSize, curBoard->draw_elemSize, WHITE);
 
+                SetFont(curBoard->draw_font, BLACK);
                 switch (curBoard->board[i].field_type) {
                     case FIELD_EMPTY:
                         DrawString(x, y, gridTypeString[curBoard->board[i].grid_type]);
@@ -630,8 +665,16 @@ void board_draw_update(int bPartialUpdate)
                         if (curBoard->board[i].field_type == FIELD_BLACK)
                             SetFont(curBoard->draw_font, WHITE);
                         DrawString(x, y, markerTypeString[curBoard->board[i].marker_type]);
-                        SetFont(curBoard->draw_font, BLACK);
+                        // SetFont(curBoard->draw_font, BLACK);
                         break;
+                }
+
+                /* mark current move on the board */
+                if (curBoard->cur_move_r > 0 && curBoard->cur_move_c > 0 
+                    && curBoard->cur_move_r == r && curBoard->cur_move_c == c) {
+                    SetFont(curBoard->draw_font, 
+                            (curBoard->board[i].field_type == FIELD_BLACK) ? WHITE : BLACK);
+                    DrawString(x, y, markerTypeString[MARKER_CIRC]);
                 }
 
                 // if (bPartialUpdate)
