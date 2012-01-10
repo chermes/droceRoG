@@ -42,8 +42,9 @@ typedef struct {
     int varFontSize;
     int varFontSep;
     ifont *varWin_ttf;
-    int varwin_w;
-    int varwin_h;
+    int varwin_w; /* max number of moves shown */
+    int varwin_h; /* max number of variations shown */
+    int border_sep; /* distance to screen border */
 } DrawProperties;
 
 /******************************************************************************/
@@ -174,10 +175,15 @@ void initDrawProperties()
     drawProps.varFontSep = drawProps.varFontSize / 4;
     drawProps.varWin_ttf = OpenFont("drocerog", drawProps.varFontSize, 1);
 
+    /* distance to screen border */
+    drawProps.border_sep = drawProps.varFontSize;
+
     /* comment window */
     drawProps.info_y = drawProps.fontSize * 2 + drawProps.fontSpace * 2
                             + ScreenWidth();
-    drawProps.comment_width = ScreenWidth() - drawProps.varwin_w * 2 * drawProps.varFontSize + drawProps.varFontSize ;
+    drawProps.comment_width = ScreenWidth()
+                              - drawProps.varwin_w * 2 * drawProps.varFontSize + drawProps.varFontSize      /* varWin width */
+                              - 3 * drawProps.border_sep;                                                   /* space between screen and components */
 }/*}}}*/
 
 void test_readSGF()
@@ -233,9 +239,10 @@ void draw_variation(int bPartialUpdate)
         return;
 
     if (bPartialUpdate) {
-        FillArea(drawProps.comment_width, drawProps.info_y,
-                 ScreenWidth() - drawProps.comment_width,
-                 ScreenHeight() - drawProps.info_y,
+        FillArea(drawProps.comment_width + 2 * drawProps.border_sep,                 /* x */
+                 drawProps.info_y,                                                   /* y */
+                 ScreenWidth() - drawProps.comment_width + 2 * drawProps.border_sep, /* w */
+                 ScreenHeight() - drawProps.info_y,                                  /* h */
                  WHITE);
     }
 
@@ -250,13 +257,13 @@ void draw_variation(int bPartialUpdate)
     for (nd=ndBegin; nd; nd=nd->child) {
         for (ndVar=nd; ndVar; ndVar=ndVar->nextVar) {
             lvl = ndVar->draw_lvl;
-            x = drawProps.comment_width + 2 * i * drawProps.varFontSize;
+            x = drawProps.comment_width + 2 * drawProps.border_sep + 2 * i * drawProps.varFontSize;
             y = drawProps.info_y + lvl * (drawProps.varFontSize + drawProps.varFontSep);
 
             if (lvl < drawProps.varwin_h) {
                 /* draw "parent" line */
                 if (ndVar->parent && i > 0) {
-                    x_parent = drawProps.comment_width + 2 * (i-1) * drawProps.varFontSize;
+                    x_parent = drawProps.comment_width + 2 * drawProps.border_sep + 2 * (i-1) * drawProps.varFontSize;
                     y_parent = drawProps.info_y + ndVar->parent->draw_lvl * (drawProps.varFontSize + drawProps.varFontSep);
 
                     DrawLine(x, y + drawProps.varFontSize / 2,
@@ -300,14 +307,15 @@ void draw_variation(int bPartialUpdate)
         }
 
         i += 1;
-        if (i > drawProps.varwin_w)
+        if (i >= drawProps.varwin_w)
             break;
     }
 
     if (bPartialUpdate) {
-        PartialUpdateBW(drawProps.comment_width, drawProps.info_y, /* x, y */
-                        ScreenWidth() - drawProps.comment_width,   /* w */
-                        ScreenHeight() - drawProps.info_y);        /* h */
+        PartialUpdateBW(drawProps.comment_width + 2 * drawProps.border_sep,                 /* x */
+                        drawProps.info_y,                                                   /* y */
+                        ScreenWidth() - drawProps.comment_width + 2 * drawProps.border_sep, /* w */
+                        ScreenHeight() - drawProps.info_y);                                 /* h */
     }
 
 }/*}}}*/
@@ -327,18 +335,18 @@ void gogame_draw_fullrepaint()
             "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
             gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank, 
             gameInfo.date, gameInfo.result);
-        DrawString(2, drawProps.fontSpace, msg);
+        DrawString(drawProps.border_sep, drawProps.fontSpace, msg);
         snprintf( msg, sizeof(msg),
             "Time: %d min (%s), Komi: %s, Handicap: %d, Ruleset: %s",
             gameInfo.time / 60, gameInfo.overtime,
             gameInfo.komi, gameInfo.handicap, gameInfo.ruleset);
-        DrawString(2, drawProps.fontSpace*2+drawProps.fontSize, msg);
+        DrawString(drawProps.border_sep, drawProps.fontSpace*2+drawProps.fontSize, msg);
 
         /* draw comment window */
         if (comment_str != NULL) {
             SetFont(drawProps.font_ttf, BLACK);
-            DrawTextRect( 5, drawProps.info_y,
-                          drawProps.comment_width - 5 - 5, ScreenHeight() - drawProps.info_y,
+            DrawTextRect( drawProps.border_sep, drawProps.info_y,
+                          drawProps.comment_width, ScreenHeight() - drawProps.info_y,
                           comment_str,
                           ALIGN_LEFT | VALIGN_TOP );
             comment_update = 0;
@@ -356,7 +364,7 @@ void gogame_draw_fullrepaint()
         /* title */
         default_ttf = OpenFont("DejaVuSerif", curFontSz, 1);
         SetFont(default_ttf, BLACK);
-        DrawString(10, linePts, "droceRoG - Go Game Record Viewer");
+        DrawString(drawProps.border_sep, linePts, "droceRoG - Go Game Record Viewer");
         linePts += curFontSz + curFontSz / 2;
         CloseFont(default_ttf);
 
@@ -366,19 +374,19 @@ void gogame_draw_fullrepaint()
         curFontSz = ScreenWidth() / 600 * 14;
         default_ttf = OpenFont("DejaVuSerif", curFontSz, 1);
         SetFont(default_ttf, BLACK);
-        DrawString(10, linePts, "Author: Christoph Hermes (hermes<at>hausmilbe<dot>net)");
+        DrawString(drawProps.border_sep, linePts, "Author: Christoph Hermes (hermes<at>hausmilbe<dot>net)");
         linePts += curFontSz + curFontSz / 2;
-        DrawString(10, linePts, "Version: "DROCEROG_VERSION);
+        DrawString(drawProps.border_sep, linePts, "Version: "DROCEROG_VERSION);
         linePts += curFontSz + curFontSz / 2;
         linePts += curFontSz + curFontSz / 2; /* free line */
-        DrawString(10, linePts, "Please open a file by pressing the (context) menu symbol on the right side.");
+        DrawString(drawProps.border_sep, linePts, "Please open a file by pressing the (context) menu symbol on the right side.");
         linePts += curFontSz + curFontSz / 2;
 
         linePts += curFontSz + curFontSz / 2; /* free line */
 
         /* Longer help */
-        DrawTextRect(10, linePts,
-                     ScreenWidth() - 2*10, ScreenHeight() - linePts,
+        DrawTextRect(drawProps.border_sep, linePts,
+                     ScreenWidth() - 2 * drawProps.border_sep, ScreenHeight() - linePts,
                      "This program reads a SGF file (Smart Go/Game Format) and displays the contents on the screen of your PocketBook reader. It is useful for studying a (commented) Go game but useless if you want to play against the computer. You will find more detailed information and the sources on \n\n      http://drocerog.hausmilbe.net\n\n\
 Send me a message if you have any suggestions, like to contribute, or just want to tell me how awesome this tool is. Have fun playing and studying Go!\n\
 \n\
@@ -418,21 +426,21 @@ void gogame_draw_update()
     board_draw_update(1);
 
     if (comment_update) {
-        FillArea(5, drawProps.info_y,
-                 drawProps.comment_width - 5, ScreenHeight() - drawProps.info_y,
+        FillArea(drawProps.border_sep, drawProps.info_y,
+                 drawProps.comment_width, ScreenHeight() - drawProps.info_y,
                  WHITE);
         if (comment_str != NULL) {
             SetFont(drawProps.font_ttf, BLACK);
-            DrawTextRect( 5, drawProps.info_y,
-                          drawProps.comment_width - 5 - 5, ScreenHeight() - drawProps.info_y,
+            DrawTextRect( drawProps.border_sep, drawProps.info_y,
+                          drawProps.comment_width, ScreenHeight() - drawProps.info_y,
                           comment_str,
                           ALIGN_LEFT | VALIGN_TOP );
             // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProps.info_y,
                     // drawProps.comment_width, ScreenHeight() - drawProps.info_y);
         } 
 
-        PartialUpdate(5, drawProps.info_y,
-                      drawProps.comment_width - 5, ScreenHeight() - drawProps.info_y);
+        PartialUpdate(drawProps.border_sep, drawProps.info_y,
+                      drawProps.comment_width, ScreenHeight() - drawProps.info_y);
         comment_update = 0;
     }
 
