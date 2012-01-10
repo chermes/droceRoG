@@ -29,6 +29,14 @@ void gogame_moveVar_up();
 void gogame_move_to_nextEvt();
 void gogame_move_to_prevEvt();
 
+/* switch between full screen comment and comment under board
+ * Returns 1 if switch was successful, otherwise 0 
+ */
+int gogame_switch_fullComment();
+
+/* check if a game has been loaded */
+int gogame_isGameOpened();
+
 #ifdef __cplusplus
 }
 #endif

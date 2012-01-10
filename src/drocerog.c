@@ -61,7 +61,12 @@ int main_handler(int type, int par1, int par2)
     if (type == EVT_KEYUP) {
         switch (par1) {
             case KEY_OK:
-                fileselector_chooseFile(&cb_update_sgf);
+                if (gogame_isGameOpened()) {
+                    if (gogame_switch_fullComment())
+                        gogame_draw_fullrepaint();
+                } else {
+                    fileselector_chooseFile(&cb_update_sgf);
+                }
                 break;
 
             case KEY_BACK:
@@ -99,8 +104,7 @@ int main_handler(int type, int par1, int par2)
                 break;
 
             case KEY_MENU:
-                // OpenMenu(menu1, cindex, 20, 20, menu1_handler);
-                msg("KEY_MENU");
+                fileselector_chooseFile(&cb_update_sgf);
                 break;
         }
     }

@@ -61,6 +61,8 @@ static DrawProperties drawProps;
 
 static char *str_unknown = "unknown";
 
+static int bShowFullScreenComment = 0;
+
 /******************************************************************************/
 
 #define GET_CHAR_PROP(name__, ref__) \
@@ -116,6 +118,7 @@ int gogame_new_from_file(const char *filename)
     /* test_readSGF(); */
 
     updateCommentStr();
+    bShowFullScreenComment = 0;
 
     return 0;
 }/*}}}*/
@@ -155,6 +158,8 @@ void gogame_cleanup()
         drawProps.varwin_w = 0;
         CloseFont(drawProps.varWin_ttf);
         drawProps.varWin_ttf = NULL;
+
+        bShowFullScreenComment = 0;
 
         /* cleanup go board */
         board_cleanup();
@@ -345,33 +350,48 @@ void gogame_draw_fullrepaint()
     ClearScreen();
 
     if (gameTree != NULL) {
-        /* draw title */
-        SetFont(drawProps.font_ttf, BLACK);
-        snprintf( msg, sizeof(msg),
-            "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
-            gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank, 
-            gameInfo.date, gameInfo.result);
-        DrawString(drawProps.border_sep, drawProps.fontSpace, msg);
-        snprintf( msg, sizeof(msg),
-            "Time: %d min (%s), Komi: %s, Handicap: %d, Ruleset: %s",
-            gameInfo.time / 60, gameInfo.overtime,
-            gameInfo.komi, gameInfo.handicap, gameInfo.ruleset);
-        DrawString(drawProps.border_sep, drawProps.fontSpace*2+drawProps.fontSize, msg);
-
-        /* draw comment window */
-        if (comment_str != NULL) {
+        if (!bShowFullScreenComment) {
+            /* draw title */
             SetFont(drawProps.font_ttf, BLACK);
-            DrawTextRect( drawProps.border_sep, drawProps.info_y,
-                          drawProps.comment_width, ScreenHeight() - drawProps.info_y,
+            snprintf( msg, sizeof(msg),
+                "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
+                gameInfo.black.name, gameInfo.black.rank, gameInfo.white.name, gameInfo.white.rank, 
+                gameInfo.date, gameInfo.result);
+            DrawString(drawProps.border_sep, drawProps.fontSpace, msg);
+            snprintf( msg, sizeof(msg),
+                "Time: %d min (%s), Komi: %s, Handicap: %d, Ruleset: %s",
+                gameInfo.time / 60, gameInfo.overtime,
+                gameInfo.komi, gameInfo.handicap, gameInfo.ruleset);
+            DrawString(drawProps.border_sep, drawProps.fontSpace*2+drawProps.fontSize, msg);
+
+            /* draw comment window */
+            if (comment_str != NULL) {
+                SetFont(drawProps.font_ttf, BLACK);
+                DrawTextRect( drawProps.border_sep, drawProps.info_y,
+                              drawProps.comment_width, ScreenHeight() - drawProps.info_y,
+                              comment_str,
+                              ALIGN_LEFT | VALIGN_TOP );
+                comment_update = 0;
+                // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProps.info_y,
+                        // drawProps.comment_width, ScreenHeight() - drawProps.info_y);
+            }
+
+            /* draw variation window */
+            draw_variation(0);
+
+        } else { /* if (bShowFullScreenComment) */
+            assert(comment_str != NULL);
+
+            SetFont(drawProps.font_ttf, BLACK);
+            DrawTextRect( drawProps.border_sep, drawProps.border_sep,
+                          ScreenWidth() - 2 * drawProps.border_sep,
+                          ScreenHeight() - 3 * drawProps.border_sep,
                           comment_str,
                           ALIGN_LEFT | VALIGN_TOP );
-            comment_update = 0;
-            // fprintf(stderr, "x, y = %d, %d | w, h = %d, %d\n", 5, drawProps.info_y,
-                    // drawProps.comment_width, ScreenHeight() - drawProps.info_y);
+            DrawString(drawProps.border_sep,
+                       ScreenHeight() - 2 * drawProps.border_sep,
+                       "Info: Press the OK button to switch back to the game.");
         }
-
-        /* draw variation window */
-        draw_variation(0);
 
     } else {
         curFontSz = ScreenWidth() / 600 * 20;
@@ -426,7 +446,7 @@ Navigation keys:\n\
     }
 
     /* draw go board, if an SGF is loaded */
-    if (gameTree != NULL)
+    if (gameTree != NULL && !bShowFullScreenComment)
         board_draw_update(0);
 
     FullUpdate();
@@ -539,6 +559,8 @@ void gogame_move_forward_update(int bUpdate)
 {/*{{{*/
     if (gameTree == NULL)
         return;
+    if (bShowFullScreenComment) /* disable motion while fullscreen comment */
+        return;
 
     /* do nothing, if no continuation in this variation exists */
     if (!curNode->child) 
@@ -590,6 +612,8 @@ void apply_sgf_cmds_to_board()
 void gogame_move_back_update(int bUpdate)
 {/*{{{*/
     if (gameTree == NULL)
+        return;
+    if (bShowFullScreenComment) /* disable motion while fullscreen comment */
         return;
 
     if (board_undo())
@@ -658,6 +682,8 @@ void gogame_moveVar_down()
 
     if (gameTree == NULL)
         return;
+    if (bShowFullScreenComment) /* disable motion while fullscreen comment */
+        return;
 
     /* go to beginning of variations */
     ndCur = curNode;
@@ -689,6 +715,8 @@ void gogame_moveVar_up()
 
     if (gameTree == NULL)
         return;
+    if (bShowFullScreenComment) /* disable motion while fullscreen comment */
+        return;
 
     /* go to beginning of variations */
     ndCur = curNode;
@@ -718,6 +746,8 @@ void gogame_move_to_nextEvt()
 
     if (gameTree == NULL)
         return;
+    if (bShowFullScreenComment) /* disable motion while fullscreen comment */
+        return;
 
     /* inital step forward */
     gogame_move_forward_update(0);
@@ -737,6 +767,8 @@ void gogame_move_to_prevEvt()
 
     if (gameTree == NULL)
         return;
+    if (bShowFullScreenComment) /* disable motion while fullscreen comment */
+        return;
 
     /* inital step backward */
     gogame_move_back_update(0);
@@ -748,5 +780,24 @@ void gogame_move_to_prevEvt()
 
     /* update comment */
     updateCommentStr();
+}/*}}}*/
+
+int gogame_switch_fullComment()
+{/*{{{*/
+    if (gameTree == NULL)
+        return 0;
+    if (comment_str == NULL)
+        return 0;
+
+    bShowFullScreenComment = !bShowFullScreenComment;
+    return 1;
+}/*}}}*/
+
+int gogame_isGameOpened()
+{/*{{{*/
+    if (gameTree == NULL)
+        return 0;
+    else
+        return 1;
 }/*}}}*/
 
