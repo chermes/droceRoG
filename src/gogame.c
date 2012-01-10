@@ -782,6 +782,37 @@ void gogame_move_to_prevEvt()
     updateCommentStr();
 }/*}}}*/
 
+int gogame_move_to_page(int page)
+{/*{{{*/
+    if (gameTree == NULL)
+        return 0;
+    if (bShowFullScreenComment) /* disable motion while fullscreen comment */
+        return 0;
+    if (curNode == NULL)
+        return 0;
+
+    /* check if we are already on desired page */
+    if (page == curNode->move_num)
+        return 0;
+
+    /* check if you have to move forward or backward */
+    if (page < curNode->move_num) {
+        /* move backward until beginning or page is reached */
+        while (curNode->parent && page < curNode->move_num)
+            gogame_move_back_update(0);
+    } else if (page > curNode->move_num) {
+        /* move forward until end or page is reached */
+        while (curNode->child && page > curNode->move_num)
+            gogame_move_forward_update(0);
+    }
+
+    /* update comment */
+    updateCommentStr();
+
+    return 1;
+
+}/*}}}*/
+
 int gogame_switch_fullComment()
 {/*{{{*/
     if (gameTree == NULL)

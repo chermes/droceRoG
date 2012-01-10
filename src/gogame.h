@@ -29,6 +29,11 @@ void gogame_moveVar_up();
 void gogame_move_to_nextEvt();
 void gogame_move_to_prevEvt();
 
+/* move to specific page.
+ * Returns 1 if switch was successful, otherwise 0 
+ */
+int gogame_move_to_page(int page);
+
 /* switch between full screen comment and comment under board
  * Returns 1 if switch was successful, otherwise 0 
  */
