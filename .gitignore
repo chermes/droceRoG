@@ -5,6 +5,8 @@ Makefile
 cimages
 cmake_install.cmake
 drocerog
+drocerog.app
+drocerog.exe
 *.g2n
 *~
 *.a
