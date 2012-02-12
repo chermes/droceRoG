@@ -170,7 +170,7 @@ structured, rather just a collection of methods. But it seems to work... :-P
 
 5. Authors/Developers
 ---------------------
-* Christoph Hermes
+* Christoph Hermes (hermes<AT>hausmilbe<DOT>net)
 
 6. License
 ----------
