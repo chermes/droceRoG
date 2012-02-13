@@ -670,7 +670,7 @@ void board_draw_update(int bPartialUpdate)
                 }
 
                 /* mark current move on the board */
-                if (curBoard->cur_move_r > 0 && curBoard->cur_move_c > 0 
+                if (curBoard->cur_move_r >= 0 && curBoard->cur_move_c >= 0 
                     && curBoard->cur_move_r == r && curBoard->cur_move_c == c) {
                     SetFont(curBoard->draw_font, 
                             (curBoard->board[i].field_type == FIELD_BLACK) ? WHITE : BLACK);
