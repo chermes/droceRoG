@@ -39,6 +39,15 @@ int gogame_move_to_page(int page);
  */
 int gogame_switch_fullComment();
 
+/* Set the intro plot to be shown or not. 
+ * Returns the old status:
+ *  1: help screen is already shown
+ *  0: guess...
+ */
+int gogame_set_showHelp(int bShowHelp);
+/* Returns current status, see gogame_set_showHelp */
+int gogame_isHelpShown();
+
 /* check if a game has been loaded */
 int gogame_isGameOpened();
 

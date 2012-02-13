@@ -24,6 +24,7 @@ static imenu menu1[] = {
   { ITEM_HEADER,   0, "Menu", NULL },
   { ITEM_ACTIVE, 101, "Open SGF file...", NULL },
   { ITEM_ACTIVE, 102, "Go to move...", NULL },
+  { ITEM_ACTIVE, 103, "Show help...", NULL },
   { 0, 0, NULL, NULL }
 
 };
@@ -45,24 +46,30 @@ void menu1_handler(int index)
         case 102:
             OpenPageSelector(cb_page_selected);
             break;
+        case 103:
+            fprintf(stderr, "TODO - Show intro screen.\n");
+            if (!gogame_set_showHelp(1))
+                gogame_draw_fullrepaint();
+            break;
     }
 }
 
+/* TODO - remove this function in the future */
 void msg(char *s) 
-{
+{/*{{{*/
   FillArea(350, 770, 250, 20, WHITE);
   SetFont(times12, BLACK);
   DrawString(350, 770, s);
   PartialUpdate(350, 770, 250, 20);
-}
+}/*}}}*/
 
 void cb_update_sgf(char *filename)
-{
+{/*{{{*/
     // fprintf(stderr, "drocerog.c: callback called: %s\n", filename);
 
     gogame_new_from_file(filename);
     gogame_draw_fullrepaint();
-}
+}/*}}}*/
 
 int main_handler(int type, int par1, int par2) 
 {
@@ -94,7 +101,10 @@ int main_handler(int type, int par1, int par2)
     if (type == EVT_KEYUP) {
         switch (par1) {
             case KEY_OK:
-                if (gogame_isGameOpened()) {                    /* in game, switch full screen comment */
+                if (gogame_isHelpShown()) {                     /* go from help screen back to game */
+                    gogame_set_showHelp(0);
+                    gogame_draw_fullrepaint();
+                } else if (gogame_isGameOpened()) {             /* in game, switch full screen comment */
                     if (gogame_switch_fullComment())
                         gogame_draw_fullrepaint();
                 } else {                                        /* while no game opened, open one directly */

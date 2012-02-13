@@ -62,6 +62,7 @@ static DrawProperties drawProps;
 static char *str_unknown = "unknown";
 
 static int bShowFullScreenComment = 0;
+static int bShowHelpScreen = 0;
 
 /******************************************************************************/
 
@@ -119,6 +120,7 @@ int gogame_new_from_file(const char *filename)
 
     updateCommentStr();
     bShowFullScreenComment = 0;
+    bShowHelpScreen = 0;
 
     return 0;
 }/*}}}*/
@@ -160,6 +162,7 @@ void gogame_cleanup()
         drawProps.varWin_ttf = NULL;
 
         bShowFullScreenComment = 0;
+        bShowHelpScreen = 0;
 
         /* cleanup go board */
         board_cleanup();
@@ -349,9 +352,9 @@ void gogame_draw_fullrepaint()
 
     ClearScreen();
 
-    if (gameTree != NULL) {
+    if (!bShowHelpScreen && gameTree != NULL) {
         if (!bShowFullScreenComment) {
-            /* draw title */
+            /* draw title / header */
             SetFont(drawProps.font_ttf, BLACK);
             snprintf( msg, sizeof(msg),
                 "Black: %s [%s], White: %s [%s], Date: %s, Result: %s",
@@ -427,9 +430,9 @@ void gogame_draw_fullrepaint()
 Send me a message if you have any suggestions, like to contribute, or just want to tell me how awesome this tool is. Have fun playing and studying Go!\n\
 \n\
 \n\
-Short key description:\n\
+Right-hand keys:\n\
 \n\
-* Home - Does nothing.\n\
+* Home - Exits the program and returns to PocketBook intro screen.\n\
 * Menu - Opens context menu (file selection, go to move, etc.)\n\
 * Forward / Backward - One move forward / backward\n\
 * OK - Displays a comment on the full screen instead under the board\n\
@@ -442,11 +445,19 @@ Navigation keys:\n\
 * Return - Exit program",
                      ALIGN_LEFT | VALIGN_TOP);
 
+        /* Notification how to get back to the game */
+        if (bShowHelpScreen) {
+            DrawString(drawProps.border_sep,
+                       ScreenHeight() - 2 * drawProps.border_sep,
+                       "Info: Press the OK button to switch back to the game.");
+        }
+
         CloseFont(default_ttf);
     }
 
-    /* draw go board, if an SGF is loaded */
-    if (gameTree != NULL && !bShowFullScreenComment)
+    /* draw go board, if an SGF is loaded and none fullscreen info has to be
+     * displayed */
+    if (gameTree != NULL && !bShowFullScreenComment && !bShowHelpScreen)
         board_draw_update(0);
 
     FullUpdate();
@@ -832,3 +843,16 @@ int gogame_isGameOpened()
         return 1;
 }/*}}}*/
 
+int gogame_set_showHelp(int bShowHelp)
+{/*{{{*/
+    int oldVal = bShowHelpScreen;
+
+    bShowHelpScreen = bShowHelp;
+
+    return oldVal;
+}/*}}}*/
+
+int gogame_isHelpShown()
+{/*{{{*/
+    return bShowHelpScreen;
+}/*}}}*/
