@@ -47,7 +47,6 @@ void menu1_handler(int index)
             OpenPageSelector(cb_page_selected);
             break;
         case 103:
-            fprintf(stderr, "TODO - Show intro screen.\n");
             if (!gogame_set_showHelp(1))
                 gogame_draw_fullrepaint();
             break;
