@@ -234,7 +234,7 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
     /* update current move */
     if (bIsMove) {
         /* update old cur_move coordinates */
-        if (curBoard->cur_move_r > 0 && curBoard->cur_move_c > 0)
+        if (curBoard->cur_move_r >= 0 && curBoard->cur_move_c >= 0)
             curBoard->board[curBoard->cur_move_c * curBoard->size + curBoard->cur_move_r].draw_update = 1;
             
         curBoard->cur_move_r = r;
@@ -243,13 +243,24 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
     }
 
     /* update history */
-    if (bIsMove) /* new move creates a new history element */
+    if (bIsMove) { 
+        /* new move creates a new history element */
         history_curNode = hist_newElem(history_curNode);
-    elem = list_newElem(history_curNode->stones_placed, r, c, curBoard->board[c * curBoard->size + r].field_type);
-    /* if stones_placement list is empty, create a new one */
-    if (history_curNode->stones_placed == NULL) { 
-        history_curNode->stones_placed = elem;
+        /* new move, cleanup previous marker data */
+        if (history_curNode->prev) {
+            for (elem = history_curNode->prev->marker_set; elem; elem = elem->next) {
+                // fprintf(stderr, "removing marker %d at pos (%d,%d)\n", 
+                    // curBoard->board[elem->c * curBoard->size + elem->r].marker_type,
+                    // elem->c, elem->r);
+                curBoard->board[elem->c * curBoard->size + elem->r].marker_type = MARKER_EMPTY;
+                curBoard->board[elem->c * curBoard->size + elem->r].draw_update = 1;
+            }
+        }
     }
+    elem = list_newElem(history_curNode->stones_placed, r, c, curBoard->board[c * curBoard->size + r].field_type);
+    /* if stones_placement list is empty, create a ew one */
+    if (history_curNode->stones_placed == NULL)
+        history_curNode->stones_placed = elem;
     if (bIsMove)
         history_curNode->curMove = elem;
 
@@ -272,6 +283,41 @@ void board_placeStone(int r, int c, BoardPlayer player, int bIsMove)
         // fprintf(stderr, "END \n");
     // }
 
+}/*}}}*/
+
+void board_placeMarker(int r, int c, BoardMarker marker)
+{/*{{{*/
+    ListElem *elem;
+
+    assert( curBoard != NULL );
+    assert( r >= 0 );
+    assert( c >= 0 );
+    assert( r < curBoard->size );
+    assert( c < curBoard->size );
+
+    switch (marker) {
+        case MARK_SQUARE:
+            curBoard->board[c * curBoard->size + r].marker_type = MARKER_SQUARE;
+            break;
+
+        case MARK_CIRC:
+            curBoard->board[c * curBoard->size + r].marker_type = MARKER_CIRC;
+            break;
+
+        case MARK_TRIANGLE:
+            curBoard->board[c * curBoard->size + r].marker_type = MARKER_TRIANGLE;
+            break;
+    }
+    curBoard->board[c * curBoard->size + r].draw_update = 1;
+
+    /* update history */
+    elem = list_newElem(history_curNode->marker_set, r, c, curBoard->board[c * curBoard->size + r].marker_type);
+    /* If stones_placement list is empty, create a new one.
+     * Otherwise, the element is already placed in the history chain. 
+     */
+    if (history_curNode->marker_set == NULL) {
+        history_curNode->marker_set = elem;
+    }
 }/*}}}*/
 
 int board_undo()

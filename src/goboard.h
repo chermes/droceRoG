@@ -7,6 +7,7 @@
 #define GOBOARD_H
 
 typedef enum { BOARD_BLACK, BOARD_WHITE } BoardPlayer;
+typedef enum { MARK_SQUARE, MARK_CIRC, MARK_TRIANGLE } BoardMarker;
 
 #ifdef __cplusplus
 extern "C"
@@ -32,6 +33,10 @@ void board_draw_update(int bPartialUpdate);
  * new history entry. Otherwise, it just updates the current history.
  */
 void board_placeStone(int r, int c, BoardPlayer player, int bIsMove);
+
+/* set marker to board at position (r,c)
+ */
+void board_placeMarker(int r, int c, BoardMarker marker);
 
 /* Undo current move. Returns 1 if successful, and 0 if not.
  */

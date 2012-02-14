@@ -600,21 +600,29 @@ void apply_sgf_cmds_to_board()
     /* for all properties in this move */
     for (prop = curNode->props; prop; prop = prop->next) {
         switch (prop->name) {
-            case ENC_SGFPROP('A', 'W'):
-                // board_placeStone(prop->value[1] - 'a', prop->value[0] - 'a', BOARD_WHITE, 0);
+
+            case ENC_SGFPROP('A', 'B'):     /* added black stone */
+                board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_BLACK, 0);
+                break;
+            case ENC_SGFPROP('A', 'W'):     /* added white stone */
                 board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_WHITE, 0);
                 break;
 
-            case ENC_SGFPROP('A', 'B'):
-                board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_BLACK, 0);
-                break;
-
-            case ENC_SGFPROP('B', ' '):
+            case ENC_SGFPROP('B', ' '):     /* move: black stone */
                 board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_BLACK, 1);
                 break;
-
-            case ENC_SGFPROP('W', ' '):
+            case ENC_SGFPROP('W', ' '):     /* move: white stone */
                 board_placeStone(get_moveX(prop, sz), get_moveY(prop, sz), BOARD_WHITE, 1);
+                break;
+
+            case ENC_SGFPROP('S', 'Q'):     /* marker: square */
+                board_placeMarker(get_moveX(prop, sz), get_moveY(prop, sz), MARK_SQUARE);
+                break;
+            case ENC_SGFPROP('C', 'R'):     /* marker: circle */
+                board_placeMarker(get_moveX(prop, sz), get_moveY(prop, sz), MARK_CIRC);
+                break;
+            case ENC_SGFPROP('T', 'R'):     /* marker: triangle */
+                board_placeMarker(get_moveX(prop, sz), get_moveY(prop, sz), MARK_TRIANGLE);
                 break;
         }
     }
