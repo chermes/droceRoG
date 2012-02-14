@@ -2,7 +2,6 @@
 droceRoG - Go Game Record/Kifu Viewer
 =====================================
 
-Author:  Christoph Hermes (hermes<AT>hausmilbe<DOT>net)
 Version: 0.1
 Projected is hosted on https://github.com/chermes/droceRoG by GitHub
 
@@ -52,13 +51,14 @@ Currently, droceRoG is supported for the PocketBook Pro 6" and 9" series, but
 still in development. If you have any suggestions, ideas or find bugs, please
 report them in the GitHub Issues section [5]. A PocketBook executable will be
 released when a stable version 1.0 is reached, major bugs have been fixed, and
-the main functionality is implemented (hopefully, soon). 
+the main functionality is implemented (hopefully, soon) but unstable releases
+0.X are published before.
 
 2. Install the Program
 ----------------------
-Since there is no official release yet, you're not able to download and install
-the program on-the-fly. But you can download the sources, compile it for
-yourself (see section "Development") and put droceRoG on your ebook. 
+There are official compiled releases on GitHub [6] (droceRoG_*.zip), but you
+can also compile the program for yourself (see section "Development"). In both
+cases, the installation procedure is the same:
 
 For installing droceRoG, you need the following files:
 * drocerog.app
@@ -114,7 +114,7 @@ root permissions for the SDK requirements and know how to use a shell.
 4.1 Install PocketBook SDK
 --------------------------
 PocketBook provides a simple SDK at SourceForge which can be installed without
-root permissions. Go to [6] and download the file "sdkrelease_1_1a.tar.gz"
+root permissions. Go to [7] and download the file "sdkrelease_1_1a.tar.gz"
 (maybe there is a newer version available).
 
 Follow the readme.txt instructions:
@@ -137,7 +137,7 @@ Follow the readme.txt instructions:
 Move to your sources directory:
     cd ~/projects/sources/
 
-Either manually download the sources from GitHub [7] or by using git:
+Either manually download the sources from GitHub [8] or by using git:
     git clone git://github.com/chermes/droceRoG.git
 
 Set up your local PB system ~/projects/system according to [2. Install the
@@ -159,10 +159,10 @@ There are two compilation modes:
 Help is highly appreciated. The project has a simple structure:
 
 src/    Main source files.
-sgf/    SGF file reading lib adopted from the GnuGo project [8].
+sgf/    SGF file reading lib adopted from the GnuGo project [9].
 fonts/  Instead of using fixed-size bitmaps, droceRoG uses own designed,
         scalable fonts. The main font file is "drocerog.sfd" and can be opened
-        by FontForge [9]. After editing, the font can be exported to
+        by FontForge [10]. After editing, the font can be exported to
         "drocerog.ttf".
 
 At this point, an excuse: The content of the source files is not very
@@ -183,23 +183,25 @@ so an own version is shipped with the droceRoG source code.
 7. References
 -------------
 
-[1] http://www.pocketbook-int.com/us
-    PocketBook ebook reader website, overview of different models
-[2] http://www.red-bean.com/sgf/
-    SGF file format definition
-[3] https://en.wikipedia.org/wiki/Go_%28game%29
-    Good overview about the Go game
-[4] http://gtl.xmp.net/
-    The Go Teaching Ladder; many reviews by strong amateur players
-[5] https://github.com/chermes/droceRoG/issues
-    Put issues, ideas and bug reports here.
-[6] http://sourceforge.net/projects/pocketbook-free/files/PocketBook_Pro_SDK_Linux_1.1/
-    PocketBook Pro SDK
-[7] https://github.com/chermes/droceRoG/zipball/master
-    Download droceRoG sources as a zip ball
-[8] https://www.gnu.org/software/gnugo/
-    GnuGo project
-[9] http://fontforge.sourceforge.net/
-    FontForge: create, edit, and export font files to TTF
+[1]  http://www.pocketbook-int.com/us
+     PocketBook ebook reader website, overview of different models
+[2]  http://www.red-bean.com/sgf/
+     SGF file format definition
+[3]  https://en.wikipedia.org/wiki/Go_%28game%29
+     Good overview about the Go game
+[4]  http://gtl.xmp.net/
+     The Go Teaching Ladder; many reviews by strong amateur players
+[5]  https://github.com/chermes/droceRoG/issues
+     Put issues, ideas and bug reports here.
+[6]  https://github.com/chermes/droceRoG/downloads
+     Download compiled droceRoG releases.
+[7]  http://sourceforge.net/projects/pocketbook-free/files/PocketBook_Pro_SDK_Linux_1.1/
+     PocketBook Pro SDK
+[8]  https://github.com/chermes/droceRoG/zipball/master
+     Download droceRoG sources as a zip ball
+[9]  https://www.gnu.org/software/gnugo/
+     GnuGo project
+[10] http://fontforge.sourceforge.net/
+     FontForge: create, edit, and export font files to TTF
 
 = END OF FILE =
